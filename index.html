@@ -212,12 +212,74 @@ body {
 .nav-btn.next { text-align: right; margin-left: auto; }
 .nav-spacer { flex: 1; }
 
-/* ── ENGLISH PLACEHOLDER ── */
-.english-ph { text-align: center; padding: 80px 40px; }
-.english-ph-icon { font-size: 60px; margin-bottom: 20px; }
-.english-ph h1 { font-size: 26px; font-weight: 700; margin-bottom: 10px; }
-.english-ph p { color: var(--text-muted); font-size: 15px; max-width: 380px; margin: 0 auto; line-height: 1.65; }
-.english-ph .badge { display: inline-block; margin-top: 20px; background: var(--warn-bg); color: var(--warn); font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 20px; border: 1px solid #fde68a; }
+/* ── WATERMARK ── */
+.sidebar-wmark {
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-light);
+  flex-shrink: 0;
+  line-height: 1.5;
+}
+.sidebar-wmark a { color: var(--primary); text-decoration: none; opacity: 0.7; }
+.sidebar-wmark a:hover { opacity: 1; }
+
+/* ── ENGLISH PAGE ── */
+.english-wrap {
+  display: flex; gap: 32px; align-items: flex-start;
+  padding: 40px 48px; max-width: none;
+}
+.english-left {
+  flex: 1; min-width: 0;
+}
+.english-left h1 { font-size: 26px; font-weight: 700; margin-bottom: 12px; }
+.english-left p { color: var(--text-muted); font-size: 15px; line-height: 1.65; margin-bottom: 16px; }
+.eng-badge { display: inline-block; background: var(--warn-bg); color: var(--warn); font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 20px; border: 1px solid #fde68a; }
+.english-features { margin-top: 28px; display: flex; flex-direction: column; gap: 12px; }
+.eng-feat {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 14px; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--tag-bg);
+}
+.eng-feat-icon { font-size: 20px; flex-shrink: 0; }
+.eng-feat-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+.eng-feat-desc { font-size: 12px; color: var(--text-muted); }
+
+/* ── WORD GENERATOR ── */
+.word-gen {
+  width: 340px; min-width: 300px; flex-shrink: 0;
+  border: 1px solid var(--border); border-radius: 12px;
+  overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+}
+.wg-header {
+  background: var(--primary); padding: 16px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.wg-title { font-size: 13px; font-weight: 600; color: #fff; }
+.wg-subtitle { font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 1px; }
+.wg-body { padding: 22px 20px; }
+.wg-word { font-size: 32px; font-weight: 700; color: var(--primary); letter-spacing: -0.5px; margin-bottom: 4px; }
+.wg-trans { font-size: 11px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; margin-bottom: 6px; }
+.wg-pos { display: inline-block; font-size: 11px; font-weight: 600; color: var(--primary); background: var(--primary-light); padding: 2px 9px; border-radius: 10px; margin-bottom: 14px; }
+.wg-ru { font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 16px; }
+.wg-divider { height: 1px; background: var(--border); margin: 0 0 16px; }
+.wg-usage-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 8px; }
+.wg-example {
+  display: flex; gap: 10px; margin-bottom: 10px;
+  padding: 10px 12px; border-radius: 7px; background: var(--tag-bg);
+  font-size: 13px; line-height: 1.55;
+}
+.wg-ex-flag { font-size: 16px; flex-shrink: 0; }
+.wg-ex-text { color: var(--text); }
+.wg-usage-note { font-size: 12px; color: var(--text-muted); line-height: 1.55; margin-top: 10px; padding: 10px 12px; background: var(--note-bg); border-radius: 7px; border-left: 3px solid var(--primary); }
+.wg-footer { padding: 0 20px 18px; }
+.wg-btn {
+  width: 100%; padding: 10px; font-size: 13px; font-weight: 600;
+  font-family: inherit; background: var(--primary); color: #fff;
+  border: none; border-radius: 8px; cursor: pointer; transition: background 0.15s;
+}
+.wg-btn:hover { background: var(--primary-dark); }
+.wg-counter { text-align: center; font-size: 11px; color: var(--text-light); margin-top: 8px; }
 
 /* ── RESPONSIVE ── */
 @media (max-width: 768px) {
@@ -243,6 +305,9 @@ body {
     <button class="tab-btn" id="tabEnglish" onclick="switchTab('english')">English</button>
   </div>
   <div class="chapter-list" id="chapterList"></div>
+  <div class="sidebar-wmark">
+    Создано с помощью <a href="https://claude.ai" target="_blank">Claude</a> · 2026
+  </div>
 </aside>
 
 <!-- MAIN -->
@@ -1295,6 +1360,7 @@ function switchTab(tab) {
     renderEnglish();
   } else {
     document.getElementById('chapterList').style.display = '';
+    resetContentArea();
     if (currentSectionId) {
       const flat = flatSections();
       const found = flat.find(x => x.sec.id === currentSectionId);
@@ -1328,7 +1394,6 @@ function renderHome() {
   document.getElementById('topBar').innerHTML = '<a onclick="goHome()">PyLearn</a>';
   document.getElementById('contentArea').innerHTML = `
     <div>
-      <div class="home-badge">v1.0 · Python 3.x</div>
       <h1 class="home-title">Изучаем <span>Python</span><br>с нуля до уверенного уровня</h1>
       <p class="home-desc">Структурированный курс с теорией, примерами кода и практическими задачами. Все темы — от основ до объектно-ориентированного программирования.</p>
 
@@ -1393,17 +1458,227 @@ function renderSection(ch, sec) {
   document.querySelectorAll('.code-block pre code').forEach(el => hljs.highlightElement(el));
 }
 
+// ─── WORDS DATA ───────────────────────────────────────────────────────────────
+const WORDS = [
+  { word:"algorithm", trans:"/ˈælɡərɪðəm/", pos:"существительное", ru:"алгоритм",
+    en_ex:"The sorting algorithm rearranges the array in ascending order.",
+    ru_ex:"Алгоритм сортировки расставляет элементы массива по возрастанию.",
+    note:"Используется в программировании, математике и описании любых пошаговых процессов." },
+  { word:"variable", trans:"/ˈveəriəbl/", pos:"существительное", ru:"переменная",
+    en_ex:"Declare a variable before you assign a value to it.",
+    ru_ex:"Объяви переменную перед тем, как присвоить ей значение.",
+    note:"В IT обозначает именованную ячейку памяти. В обычной речи — «изменяемый фактор»." },
+  { word:"debug", trans:"/diːˈbʌɡ/", pos:"глагол",  ru:"отлаживать / искать баги",
+    en_ex:"It took three hours to debug that tricky function.",
+    ru_ex:"На отладку этой хитрой функции ушло три часа.",
+    note:"«Bug» — ошибка в коде, «debug» — её устранение. Термин восходит к 1947 году (настоящий жук в компьютере)." },
+  { word:"deploy", trans:"/dɪˈplɔɪ/", pos:"глагол", ru:"развёртывать / деплоить",
+    en_ex:"We will deploy the new version to production tonight.",
+    ru_ex:"Мы развернём новую версию на продакшене сегодня ночью.",
+    note:"Означает перенос приложения на сервер для использования реальными пользователями." },
+  { word:"refactor", trans:"/riːˈfæktər/", pos:"глагол", ru:"рефакторить / реорганизовывать код",
+    en_ex:"Let's refactor this function to make it more readable.",
+    ru_ex:"Давай отрефакторим эту функцию, чтобы она стала более читаемой.",
+    note:"Рефакторинг улучшает структуру кода без изменения его поведения." },
+  { word:"scalable", trans:"/ˈskeɪləbl/", pos:"прилагательное", ru:"масштабируемый",
+    en_ex:"We need a scalable architecture that handles millions of users.",
+    ru_ex:"Нам нужна масштабируемая архитектура, которая выдержит миллионы пользователей.",
+    note:"Система «scalable», если она справляется с ростом нагрузки без кардинальных изменений." },
+  { word:"legacy", trans:"/ˈleɡəsi/", pos:"прилагательное / существительное", ru:"устаревший / наследие",
+    en_ex:"The company still relies on a legacy codebase from the 90s.",
+    ru_ex:"Компания до сих пор использует устаревший код из 90-х.",
+    note:"«Legacy code» — старый рабочий код, который сложно изменять, но нельзя просто выбросить." },
+  { word:"iterate", trans:"/ˈɪtəreɪt/", pos:"глагол", ru:"итерировать / повторять",
+    en_ex:"We iterate over each element in the list to find the maximum.",
+    ru_ex:"Мы проходим по каждому элементу списка, чтобы найти максимум.",
+    note:"В разработке: перебирать элементы коллекции. В процессах: повторять цикл улучшений." },
+  { word:"implement", trans:"/ˈɪmplɪment/", pos:"глагол", ru:"реализовывать / внедрять",
+    en_ex:"It took two days to implement the new feature.",
+    ru_ex:"На реализацию новой функции ушло два дня.",
+    note:"«Implement» значит воплотить идею в код или внедрить систему в работу." },
+  { word:"dependency", trans:"/dɪˈpendənsi/", pos:"существительное", ru:"зависимость",
+    en_ex:"This project has five external dependencies listed in requirements.txt.",
+    ru_ex:"В этом проекте пять внешних зависимостей, перечисленных в requirements.txt.",
+    note:"В Python зависимости — сторонние библиотеки, без которых проект не запустится." },
+  { word:"repository", trans:"/rɪˈpɒzɪtri/", pos:"существительное", ru:"репозиторий",
+    en_ex:"Clone the repository and run the setup script.",
+    ru_ex:"Склонируй репозиторий и запусти скрипт настройки.",
+    note:"«Repo» — хранилище кода с историей изменений. Обычно находится на GitHub или GitLab." },
+  { word:"pipeline", trans:"/ˈpaɪplaɪn/", pos:"существительное", ru:"конвейер / пайплайн",
+    en_ex:"The CI/CD pipeline runs tests automatically on every commit.",
+    ru_ex:"CI/CD-пайплайн автоматически запускает тесты при каждом коммите.",
+    note:"В IT: последовательность автоматических шагов обработки — тестирование, сборка, деплой." },
+  { word:"efficient", trans:"/ɪˈfɪʃnt/", pos:"прилагательное", ru:"эффективный",
+    en_ex:"This algorithm is more efficient — it runs in O(n log n) time.",
+    ru_ex:"Этот алгоритм эффективнее — он работает за время O(n log n).",
+    note:"«Efficient» подчёркивает, что результат достигается с минимальными ресурсами." },
+  { word:"validate", trans:"/ˈvælɪdeɪt/", pos:"глагол", ru:"валидировать / проверять",
+    en_ex:"Always validate user input before saving it to the database.",
+    ru_ex:"Всегда валидируй данные пользователя перед сохранением в базу.",
+    note:"Валидация — проверка данных на соответствие ожидаемому формату или правилам." },
+  { word:"authenticate", trans:"/ɔːˈθentɪkeɪt/", pos:"глагол", ru:"аутентифицировать",
+    en_ex:"Users must authenticate before accessing their account data.",
+    ru_ex:"Пользователи должны пройти аутентификацию перед доступом к данным аккаунта.",
+    note:"«Authenticate» — подтвердить личность. Не путать с «authorize» — предоставить права." },
+  { word:"optimize", trans:"/ˈɒptɪmaɪz/", pos:"глагол", ru:"оптимизировать",
+    en_ex:"Optimize the query to avoid a full table scan.",
+    ru_ex:"Оптимизируй запрос, чтобы избежать полного сканирования таблицы.",
+    note:"Оптимизация — ускорение или снижение потребления ресурсов без изменения результата." },
+  { word:"concurrency", trans:"/kənˈkɜːrənsi/", pos:"существительное", ru:"параллелизм / конкурентность",
+    en_ex:"Concurrency allows multiple tasks to make progress at the same time.",
+    ru_ex:"Конкурентность позволяет нескольким задачам выполняться одновременно.",
+    note:"Важно для серверных приложений. В Python реализуется через asyncio, threads и multiprocessing." },
+  { word:"exception", trans:"/ɪkˈsepʃn/", pos:"существительное", ru:"исключение / ошибка",
+    en_ex:"An exception is raised when you divide a number by zero.",
+    ru_ex:"Исключение возникает при делении числа на ноль.",
+    note:"В Python исключения перехватываются блоком try/except и позволяют обработать ошибку." },
+  { word:"abstract", trans:"/ˈæbstrækt/", pos:"прилагательное / глагол", ru:"абстрактный / абстрагировать",
+    en_ex:"Abstract classes define an interface without implementing all methods.",
+    ru_ex:"Абстрактные классы задают интерфейс, не реализуя все методы.",
+    note:"Абстракция — скрытие деталей реализации, предоставление только нужного интерфейса." },
+  { word:"maintain", trans:"/meɪnˈteɪn/", pos:"глагол", ru:"поддерживать / сопровождать",
+    en_ex:"Good documentation makes code easier to maintain over time.",
+    ru_ex:"Хорошая документация делает код проще в сопровождении со временем.",
+    note:"«Maintain» в IT — регулярно обновлять и исправлять код, не давая ему устаревать." },
+  { word:"syntax", trans:"/ˈsɪntæks/", pos:"существительное", ru:"синтаксис",
+    en_ex:"Python syntax is clean and easy to read for beginners.",
+    ru_ex:"Синтаксис Python чист и легко читается для начинающих.",
+    note:"Синтаксис — правила написания корректного кода на языке программирования." },
+  { word:"prototype", trans:"/ˈprəʊtətaɪp/", pos:"существительное / глагол", ru:"прототип / прототипировать",
+    en_ex:"We built a prototype in one week to test the core idea.",
+    ru_ex:"Мы собрали прототип за неделю, чтобы проверить основную идею.",
+    note:"Прототип — ранняя версия продукта для проверки концепции, не для production." },
+  { word:"integration", trans:"/ˌɪntɪˈɡreɪʃn/", pos:"существительное", ru:"интеграция",
+    en_ex:"The payment service integration was completed last sprint.",
+    ru_ex:"Интеграция с платёжным сервисом была завершена в прошлом спринте.",
+    note:"Интеграция — объединение разных систем или компонентов в единое целое." },
+  { word:"framework", trans:"/ˈfreɪmwɜːk/", pos:"существительное", ru:"фреймворк",
+    en_ex:"Django is a high-level web framework for Python.",
+    ru_ex:"Django — высокоуровневый веб-фреймворк для Python.",
+    note:"Фреймворк — готовая структура, которая ускоряет разработку, задавая архитектуру приложения." },
+  { word:"recursion", trans:"/rɪˈkɜːʃn/", pos:"существительное", ru:"рекурсия",
+    en_ex:"Recursion is when a function calls itself to solve a smaller problem.",
+    ru_ex:"Рекурсия — когда функция вызывает саму себя для решения меньшей задачи.",
+    note:"Каждая рекурсивная функция должна иметь базовый случай, иначе будет бесконечный цикл." },
+  { word:"endpoint", trans:"/ˈendpɔɪnt/", pos:"существительное", ru:"конечная точка / эндпоинт",
+    en_ex:"Send a POST request to the /users endpoint to create an account.",
+    ru_ex:"Отправь POST-запрос на эндпоинт /users для создания аккаунта.",
+    note:"В REST API эндпоинт — URL-адрес, по которому принимаются запросы определённого типа." },
+  { word:"override", trans:"/ˌəʊvəˈraɪd/", pos:"глагол", ru:"переопределять",
+    en_ex:"Child classes can override methods from the parent class.",
+    ru_ex:"Дочерние классы могут переопределять методы родительского класса.",
+    note:"В ООП переопределение позволяет изменить поведение унаследованного метода." },
+  { word:"runtime", trans:"/ˈrʌntaɪm/", pos:"существительное", ru:"время выполнения / рантайм",
+    en_ex:"This error only appears at runtime, not during compilation.",
+    ru_ex:"Эта ошибка появляется только во время выполнения, а не при компиляции.",
+    note:"«Runtime error» — ошибка, которую нельзя поймать статическим анализом." },
+  { word:"resilient", trans:"/rɪˈzɪliənt/", pos:"прилагательное", ru:"устойчивый / жизнестойкий",
+    en_ex:"A resilient system recovers automatically from unexpected failures.",
+    ru_ex:"Устойчивая система автоматически восстанавливается после неожиданных сбоев.",
+    note:"«Resilience» — свойство систем и людей быстро восстанавливаться после проблем." },
+  { word:"verbose", trans:"/vɜːˈbəʊs/", pos:"прилагательное", ru:"многословный / детальный",
+    en_ex:"Use the --verbose flag to see detailed output during execution.",
+    ru_ex:"Используй флаг --verbose, чтобы видеть подробный вывод при выполнении.",
+    note:"«Verbose mode» — режим с максимальным количеством отладочной информации в консоли." },
+];
+
+let wordIdx = Math.floor(Math.random() * WORDS.length);
+let genCount = 0;
+
+function generateWord() {
+  wordIdx = (wordIdx + 1) % WORDS.length;
+  genCount++;
+  renderWordCard();
+}
+
+function renderWordCard() {
+  const w = WORDS[wordIdx];
+  document.getElementById('wg-word').textContent = w.word;
+  document.getElementById('wg-trans').textContent = w.trans;
+  document.getElementById('wg-pos').textContent = w.pos;
+  document.getElementById('wg-ru').textContent = w.ru;
+  document.getElementById('wg-en-ex').textContent = w.en_ex;
+  document.getElementById('wg-ru-ex').textContent = w.ru_ex;
+  document.getElementById('wg-note').textContent = w.note;
+  document.getElementById('wg-counter').textContent = `Слово ${wordIdx + 1} из ${WORDS.length}`;
+}
+
 // ─── RENDER ENGLISH ───────────────────────────────────────────────────────────
 function renderEnglish() {
   document.getElementById('topBar').innerHTML = '<a onclick="goHome()">PyLearn</a> &nbsp;/&nbsp; English';
-  document.getElementById('contentArea').innerHTML = `
-    <div class="english-ph">
-      <div class="english-ph-icon">🇬🇧</div>
-      <h1>English Course</h1>
-      <p>Раздел с курсом английского языка находится в разработке. Здесь появятся материалы по грамматике, словарному запасу и разговорному английскому для IT-специалистов.</p>
-      <span class="badge">Скоро — Coming Soon</span>
+  const ca = document.getElementById('contentArea');
+  ca.style.maxWidth = 'none';
+  ca.style.padding = '0';
+  ca.innerHTML = `
+    <div class="english-wrap">
+      <div class="english-left">
+        <h1>English Course</h1>
+        <p>Раздел с курсом английского языка находится в разработке. Скоро здесь появятся структурированные материалы для IT-специалистов.</p>
+        <span class="eng-badge">Скоро — Coming Soon</span>
+        <div class="english-features">
+          <div class="eng-feat">
+            <div class="eng-feat-icon">📖</div>
+            <div>
+              <div class="eng-feat-title">Грамматика для IT</div>
+              <div class="eng-feat-desc">Технический английский: описание функций, баг-репорты, код-ревью</div>
+            </div>
+          </div>
+          <div class="eng-feat">
+            <div class="eng-feat-icon">💬</div>
+            <div>
+              <div class="eng-feat-title">Разговорные конструкции</div>
+              <div class="eng-feat-desc">Стендапы, созвоны, переписка с командой на английском</div>
+            </div>
+          </div>
+          <div class="eng-feat">
+            <div class="eng-feat-icon">🎯</div>
+            <div>
+              <div class="eng-feat-title">IT-словарь</div>
+              <div class="eng-feat-desc">Термины, аббревиатуры и профессиональный жаргон разработчика</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="word-gen">
+        <div class="wg-header">
+          <div>
+            <div class="wg-title">Слово дня</div>
+            <div class="wg-subtitle">IT-словарь разработчика</div>
+          </div>
+          <div style="font-size:24px;">📚</div>
+        </div>
+        <div class="wg-body">
+          <div class="wg-word" id="wg-word"></div>
+          <div class="wg-trans" id="wg-trans"></div>
+          <div class="wg-pos" id="wg-pos"></div>
+          <div class="wg-ru" id="wg-ru"></div>
+          <div class="wg-divider"></div>
+          <div class="wg-usage-lbl">Примеры использования</div>
+          <div class="wg-example">
+            <div class="wg-ex-flag">🇬🇧</div>
+            <div class="wg-ex-text" id="wg-en-ex"></div>
+          </div>
+          <div class="wg-example">
+            <div class="wg-ex-flag">🇷🇺</div>
+            <div class="wg-ex-text" id="wg-ru-ex"></div>
+          </div>
+          <div class="wg-usage-note" id="wg-note"></div>
+        </div>
+        <div class="wg-footer">
+          <button class="wg-btn" onclick="generateWord()">Новое слово →</button>
+          <div class="wg-counter" id="wg-counter"></div>
+        </div>
+      </div>
     </div>
   `;
+  renderWordCard();
+}
+
+function resetContentArea() {
+  const ca = document.getElementById('contentArea');
+  ca.style.maxWidth = '';
+  ca.style.padding = '';
 }
 
 // ─── CODE BLOCK ───────────────────────────────────────────────────────────────
