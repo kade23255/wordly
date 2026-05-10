@@ -240,6 +240,36 @@
   .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
   .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
 
+  /* EXERCISE MODAL */
+  .ex-modal { display:none; position:fixed; inset:0; background:rgba(8,8,8,0.96); z-index:500; align-items:center; justify-content:center; backdrop-filter:blur(8px); }
+  .ex-modal.visible { display:flex; }
+  .ex-box { width:100%; max-width:560px; border:1px solid var(--line); padding:3rem; margin:1rem; background:#0d0d0d; }
+  .ex-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:2.5rem; }
+  .ex-dots { display:flex; gap:6px; margin-top:0.6rem; }
+  .ex-dot { width:32px; height:2px; background:var(--grey-dim); transition:background 0.3s; }
+  .ex-dot.done { background:var(--grey-mid); }
+  .ex-dot.active { background:var(--white); }
+  .ex-progress-label { font-family:'Courier Prime',monospace; font-size:0.55rem; letter-spacing:0.35em; text-transform:uppercase; color:var(--grey-mid); }
+  .ex-close { font-family:'Courier Prime',monospace; font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--grey-mid); background:transparent; border:none; cursor:none; transition:color 0.2s; }
+  .ex-close:hover { color:var(--white); }
+  .ex-type { font-family:'Courier Prime',monospace; font-size:0.55rem; letter-spacing:0.35em; text-transform:uppercase; color:var(--grey-mid); margin-bottom:1rem; }
+  .ex-question { font-size:1.6rem; font-weight:400; margin-bottom:1.5rem; line-height:1.25; }
+  .ex-subtext { font-style:italic; font-size:1.05rem; color:var(--grey-light); line-height:1.65; margin-bottom:1.75rem; border-left:1px solid var(--line); padding-left:1.25rem; }
+  .ex-options { display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1.5rem; }
+  .ex-option { text-align:left; font-family:'EB Garamond',serif; font-size:1.1rem; color:var(--grey-light); background:transparent; border:1px solid var(--grey-dim); padding:0.85rem 1.25rem; cursor:none; transition:all 0.15s; }
+  .ex-option:hover:not(:disabled) { border-color:var(--grey-mid); color:var(--white); }
+  .ex-option.correct { border-color:var(--white); color:var(--white); background:rgba(240,237,232,0.06); }
+  .ex-option.wrong { border-color:#8b2020; color:#c0392b; background:rgba(192,57,43,0.05); }
+  .ex-option:disabled { opacity:0.7; }
+  .ex-feedback { font-family:'Courier Prime',monospace; font-size:0.65rem; letter-spacing:0.15em; padding:0.75rem 1rem; margin-bottom:1.25rem; }
+  .ex-feedback.success { color:var(--white); border-left:2px solid var(--white); }
+  .ex-feedback.error { color:#c0392b; border-left:2px solid #8b2020; }
+  .ex-result { text-align:center; padding:1rem 0; }
+  .ex-result-score { font-size:5rem; font-weight:400; line-height:1; letter-spacing:-0.03em; margin-bottom:0.25rem; }
+  .ex-result-label { font-family:'Courier Prime',monospace; font-size:0.6rem; letter-spacing:0.3em; text-transform:uppercase; color:var(--grey-mid); margin-bottom:2rem; }
+  .ex-result-msg { font-size:1.1rem; color:var(--grey-light); line-height:1.6; margin-bottom:2rem; }
+  .ex-result-actions { display:flex; gap:0.75rem; justify-content:center; flex-wrap:wrap; }
+
   @media (max-width: 768px) {
     nav { padding: 1.5rem; }
     .nav-links { display: none; }
@@ -410,6 +440,38 @@
 
 </div>
 
+<!-- EXERCISE MODAL -->
+<div class="ex-modal" id="exerciseModal">
+  <div class="ex-box">
+    <div id="exContent">
+      <div class="ex-header">
+        <div>
+          <div class="ex-progress-label" id="exProgressLabel">Упражнение 1 из 3</div>
+          <div class="ex-dots" id="exDots"></div>
+        </div>
+        <button class="ex-close" onclick="closeExercise()">✕ закрыть</button>
+      </div>
+      <div class="ex-type" id="exType"></div>
+      <div class="ex-question" id="exQuestion"></div>
+      <div class="ex-subtext" id="exSubtext" style="display:none;"></div>
+      <div class="ex-options" id="exOptions"></div>
+      <div class="ex-feedback" id="exFeedback" style="display:none;"></div>
+      <button class="btn-primary" id="exNext" onclick="nextExercise()" style="display:none;">Следующее →</button>
+    </div>
+    <div id="exResult" style="display:none;">
+      <div class="ex-result">
+        <div class="ex-result-score" id="exResultScore"></div>
+        <div class="ex-result-label">из 3 верно</div>
+        <div class="ex-result-msg" id="exResultMsg"></div>
+        <div class="ex-result-actions">
+          <button class="wc-btn primary" id="exMarkKnown" onclick="markKnownFromExercise()" style="display:none;">✓ Перенести в «Знаю»</button>
+          <button class="wc-btn" onclick="closeExercise()">Закрыть</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
 const WORDS_URL = 'https://raw.githubusercontent.com/kade23255/wordly/main/words.json';
@@ -558,12 +620,9 @@ function renderWordCards(words) {
         <div class="wc-en">${w.def}</div>
         <div class="wc-example">"${w.example}"</div>
         <div class="wc-actions">
-          <button class="wc-btn primary ${st==='known'?'done-known':''}" onclick="markWord('${w.word}','known')">
-            ${st==='known' ? '✓ Знаю' : '✓ Знаю'}
-          </button>
-          <button class="wc-btn ${st==='learning'?'done-learning':''}" onclick="markWord('${w.word}','learning')">
-            ◈ Учу
-          </button>
+          <button class="wc-btn primary ${st==='known'?'done-known':''}" onclick="markWord('${w.word}','known')">✓ Знаю</button>
+          <button class="wc-btn ${st==='learning'?'done-learning':''}" onclick="markWord('${w.word}','learning')">◈ Учу</button>
+          ${st==='learning' ? `<button class="wc-btn" style="border-color:rgba(240,237,232,0.3);color:var(--white);" onclick="startExercise('${w.word}')">◎ Закрепить</button>` : ''}
         </div>
       </div>`;
     container.appendChild(card);
@@ -726,6 +785,132 @@ async function init() {
 }
 
 init();
+
+// ─── EXERCISES ────────────────────────────────────────────────────────────────
+let currentEx = null;
+
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+
+function startExercise(wordStr) {
+  const word = allWords.find(w => w.word === wordStr);
+  if (!word) return;
+
+  const others = shuffle(allWords.filter(w => w.word !== wordStr)).slice(0, 3);
+
+  const exercises = [
+    {
+      type: '// что означает это слово?',
+      question: word.word,
+      subtext: null,
+      options: shuffle([
+        { text: word.def_ru || word.def, correct: true },
+        ...others.map(w => ({ text: w.def_ru || w.def, correct: false }))
+      ])
+    },
+    {
+      type: '// вставь слово в предложение',
+      question: 'Какое слово пропущено?',
+      subtext: word.example.replace(new RegExp('\\b' + word.word + '\\b', 'gi'), '______'),
+      options: shuffle([
+        { text: word.word, correct: true },
+        ...others.map(w => ({ text: w.word, correct: false }))
+      ])
+    },
+    {
+      type: '// найди слово по определению',
+      question: 'Какое слово соответствует описанию?',
+      subtext: word.def,
+      options: shuffle([
+        { text: word.word, correct: true },
+        ...others.map(w => ({ text: w.word, correct: false }))
+      ])
+    }
+  ];
+
+  currentEx = { word, exercises, current: 0, score: 0 };
+  document.getElementById('exContent').style.display = 'block';
+  document.getElementById('exResult').style.display = 'none';
+  renderExercise();
+  document.getElementById('exerciseModal').classList.add('visible');
+}
+
+function renderExercise() {
+  const { exercises, current } = currentEx;
+  const ex = exercises[current];
+
+  document.getElementById('exProgressLabel').textContent = `Упражнение ${current + 1} из 3`;
+  document.getElementById('exDots').innerHTML = exercises.map((_, i) =>
+    `<span class="ex-dot ${i < current ? 'done' : i === current ? 'active' : ''}"></span>`
+  ).join('');
+
+  document.getElementById('exType').textContent = ex.type;
+  document.getElementById('exQuestion').textContent = ex.question;
+
+  const sub = document.getElementById('exSubtext');
+  if (ex.subtext) { sub.textContent = ex.subtext; sub.style.display = 'block'; }
+  else { sub.style.display = 'none'; }
+
+  document.getElementById('exOptions').innerHTML = ex.options.map((opt, i) =>
+    `<button class="ex-option" onclick="checkAnswer(${i})">${opt.text}</button>`
+  ).join('');
+
+  document.getElementById('exFeedback').style.display = 'none';
+  document.getElementById('exNext').style.display = 'none';
+}
+
+function checkAnswer(index) {
+  const { exercises, current } = currentEx;
+  const ex = exercises[current];
+  const chosen = ex.options[index];
+
+  if (chosen.correct) currentEx.score++;
+
+  document.querySelectorAll('.ex-option').forEach((btn, i) => {
+    btn.disabled = true;
+    if (ex.options[i].correct) btn.classList.add('correct');
+    else if (i === index && !chosen.correct) btn.classList.add('wrong');
+  });
+
+  const fb = document.getElementById('exFeedback');
+  fb.textContent = chosen.correct ? '✓ Верно!' : '✗ Неверно — правильный ответ выделен выше';
+  fb.className = 'ex-feedback ' + (chosen.correct ? 'success' : 'error');
+  fb.style.display = 'block';
+
+  if (current < 2) {
+    document.getElementById('exNext').style.display = 'block';
+  } else {
+    setTimeout(showResult, 1000);
+  }
+}
+
+function nextExercise() {
+  currentEx.current++;
+  renderExercise();
+}
+
+function showResult() {
+  const { score, word } = currentEx;
+  document.getElementById('exContent').style.display = 'none';
+  document.getElementById('exResult').style.display = 'block';
+  document.getElementById('exResultScore').textContent = score;
+
+  const msgs = ['Попробуй ещё раз — повтори слово и закрепи снова.', 'Неплохо! Ещё пара попыток — и запомнишь.', 'Хорошо! Почти запомнил.', 'Отлично! Слово освоено.'];
+  document.getElementById('exResultMsg').textContent = msgs[score] || msgs[0];
+
+  const btn = document.getElementById('exMarkKnown');
+  btn.style.display = score >= 2 ? 'inline-block' : 'none';
+}
+
+function markKnownFromExercise() {
+  if (!currentEx) return;
+  markWord(currentEx.word.word, 'known');
+  closeExercise();
+}
+
+function closeExercise() {
+  document.getElementById('exerciseModal').classList.remove('visible');
+  currentEx = null;
+}
 </script>
 </body>
 </html>
