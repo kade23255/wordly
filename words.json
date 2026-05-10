@@ -1,102 +1,302 @@
 [
   {
-    "date": "2026-05-10",
     "word": "ephemeral",
     "phonetic": "/ɪˈfem.ər.əl/",
     "pos": "adjective",
     "def": "Lasting for a very short time; transitory by nature.",
+    "def_ru": "Мимолётный, недолговечный — существующий лишь краткий миг.",
     "example": "The ephemeral beauty of cherry blossoms makes them all the more precious.",
     "topic": "Философия",
-    "tags": ["C1", "Поэзия", "Философия"]
+    "tags": ["C1", "Философия", "Поэзия"]
   },
   {
-    "date": "2026-05-09",
     "word": "laconic",
     "phonetic": "/ləˈkɒn.ɪk/",
     "pos": "adjective",
     "def": "Using very few words; brief and concise.",
+    "def_ru": "Лаконичный — выражающий мысль немногими словами.",
     "example": "His laconic reply left everyone guessing.",
     "topic": "Литература",
-    "tags": ["B2", "Риторика"]
+    "tags": ["B2", "Литература", "Риторика"]
   },
   {
-    "date": "2026-05-08",
     "word": "chiaroscuro",
     "phonetic": "/kiˌɑːrəˈsk(j)ʊərəʊ/",
     "pos": "noun",
     "def": "The treatment of light and shadow in drawing and painting.",
+    "def_ru": "Светотень — художественный приём контраста света и тьмы.",
     "example": "Caravaggio mastered chiaroscuro to dramatic effect.",
     "topic": "Искусство",
-    "tags": ["C2", "Живопись"]
+    "tags": ["C2", "Искусство", "Живопись"]
   },
   {
-    "date": "2026-05-07",
     "word": "melancholy",
     "phonetic": "/ˈmel.ən.kɒl.i/",
     "pos": "noun",
     "def": "A feeling of pensive sadness, typically with no obvious cause.",
+    "def_ru": "Меланхолия — задумчивая грусть без явной причины.",
     "example": "A deep melancholy settled over him as autumn approached.",
     "topic": "Философия",
-    "tags": ["B2", "Эмоции"]
+    "tags": ["B2", "Философия", "Эмоции"]
   },
   {
-    "date": "2026-05-06",
     "word": "penumbra",
     "phonetic": "/pɪˈnʌm.brə/",
     "pos": "noun",
     "def": "The partially shaded outer region of a shadow cast by an opaque object.",
+    "def_ru": "Полутень — частично затенённая область на границе тени.",
     "example": "The moon moved into the penumbra of Earth's shadow.",
     "topic": "Наука",
-    "tags": ["C1", "Астрономия"]
+    "tags": ["C1", "Наука", "Астрономия"]
   },
   {
-    "date": "2026-05-05",
     "word": "liminal",
     "phonetic": "/ˈlɪm.ɪ.nəl/",
     "pos": "adjective",
     "def": "Occupying a position at, or on both sides of, a boundary or threshold.",
+    "def_ru": "Пороговый — находящийся на границе двух состояний или пространств.",
     "example": "The airport is a liminal space — neither here nor there.",
     "topic": "Философия",
-    "tags": ["C2", "Антропология"]
+    "tags": ["C2", "Философия", "Антропология"]
   },
   {
-    "date": "2026-05-04",
     "word": "petrichor",
     "phonetic": "/ˈpet.rɪ.kɔːr/",
     "pos": "noun",
     "def": "A pleasant smell that frequently accompanies the first rain after a long period of warm, dry weather.",
+    "def_ru": "Петрикор — запах земли после первого дождя, запах дождя на сухой земле.",
     "example": "She stepped outside and inhaled the petrichor rising from the warm earth.",
     "topic": "Наука",
-    "tags": ["C1", "Природа"]
+    "tags": ["C1", "Наука", "Природа"]
   },
   {
-    "date": "2026-05-03",
     "word": "sonder",
     "phonetic": "/ˈsɒn.dər/",
     "pos": "noun",
     "def": "The realization that each passerby has a life as vivid and complex as one's own.",
+    "def_ru": "Зондер — осознание того, что жизнь каждого встречного столь же богата и сложна, как твоя.",
     "example": "Walking through the city, he was overcome by a sudden sonder.",
     "topic": "Философия",
-    "tags": ["C2", "Психология"]
+    "tags": ["C2", "Философия", "Психология"]
   },
   {
-    "date": "2026-05-02",
     "word": "serendipity",
     "phonetic": "/ˌser.ənˈdɪp.ɪ.ti/",
     "pos": "noun",
     "def": "The occurrence of events by chance in a happy or beneficial way.",
+    "def_ru": "Серендипность — счастливая случайность, удача, найденная без поиска.",
     "example": "Finding that book was pure serendipity.",
     "topic": "Литература",
-    "tags": ["B2", "Судьба"]
+    "tags": ["B2", "Литература", "Судьба"]
   },
   {
-    "date": "2026-05-01",
     "word": "numinous",
     "phonetic": "/ˈnjuː.mɪ.nəs/",
     "pos": "adjective",
-    "def": "Having a strong religious or spiritual quality; indicating or suggesting the presence of a divinity.",
+    "def": "Having a strong religious or spiritual quality; indicating the presence of a divinity.",
+    "def_ru": "Священный, возвышенный — несущий ощущение сверхъестественного присутствия.",
     "example": "The ancient cathedral had a numinous atmosphere that silenced visitors.",
     "topic": "Философия",
-    "tags": ["C2", "Религия"]
+    "tags": ["C2", "Философия", "Религия"]
+  },
+  {
+    "word": "resilient",
+    "phonetic": "/rɪˈzɪl.i.ənt/",
+    "pos": "adjective",
+    "def": "Able to recover quickly from difficult conditions.",
+    "def_ru": "Устойчивый, жизнестойкий — способный быстро восстанавливаться после трудностей.",
+    "example": "Children are remarkably resilient in the face of adversity.",
+    "topic": "Психология",
+    "tags": ["B2", "Психология", "Повседневная речь"]
+  },
+  {
+    "word": "ambiguous",
+    "phonetic": "/æmˈbɪɡ.ju.əs/",
+    "pos": "adjective",
+    "def": "Open to more than one interpretation; having a double meaning.",
+    "def_ru": "Неоднозначный, двусмысленный — допускающий несколько толкований.",
+    "example": "The ending of the film was deliberately ambiguous.",
+    "topic": "Литература",
+    "tags": ["B2", "Литература", "Риторика"]
+  },
+  {
+    "word": "sustainable",
+    "phonetic": "/səˈsteɪ.nə.bəl/",
+    "pos": "adjective",
+    "def": "Able to be maintained at a certain rate or level without depleting natural resources.",
+    "def_ru": "Устойчивый, экологичный — не наносящий вред природным ресурсам.",
+    "example": "We need to transition to sustainable energy sources.",
+    "topic": "Наука",
+    "tags": ["B2", "Наука", "Экология"]
+  },
+  {
+    "word": "eloquent",
+    "phonetic": "/ˈel.ə.kwənt/",
+    "pos": "adjective",
+    "def": "Fluent or persuasive in speaking or writing.",
+    "def_ru": "Красноречивый — говорящий или пишущий убедительно и выразительно.",
+    "example": "She gave an eloquent speech that moved the audience to tears.",
+    "topic": "Литература",
+    "tags": ["B2", "Литература", "Риторика"]
+  },
+  {
+    "word": "pragmatic",
+    "phonetic": "/præɡˈmæt.ɪk/",
+    "pos": "adjective",
+    "def": "Dealing with things sensibly and realistically in a practical way.",
+    "def_ru": "Прагматичный — действующий практично, основываясь на реальности.",
+    "example": "We need a pragmatic approach to solve this problem.",
+    "topic": "Бизнес",
+    "tags": ["B1", "Бизнес", "Повседневная речь"]
+  },
+  {
+    "word": "nuance",
+    "phonetic": "/ˈnjuː.ɑːns/",
+    "pos": "noun",
+    "def": "A subtle difference in shade of meaning, expression, or sound.",
+    "def_ru": "Нюанс — тонкое, едва уловимое различие в смысле или выражении.",
+    "example": "The translator struggled to capture the nuances of the original text.",
+    "topic": "Литература",
+    "tags": ["C1", "Литература", "Риторика"]
+  },
+  {
+    "word": "empathy",
+    "phonetic": "/ˈem.pə.θi/",
+    "pos": "noun",
+    "def": "The ability to understand and share the feelings of another.",
+    "def_ru": "Эмпатия — способность понимать и разделять чувства другого человека.",
+    "example": "Good leaders show empathy toward their team members.",
+    "topic": "Психология",
+    "tags": ["B1", "Психология", "Повседневная речь"]
+  },
+  {
+    "word": "catalyst",
+    "phonetic": "/ˈkæt.ə.lɪst/",
+    "pos": "noun",
+    "def": "A person or thing that precipitates an event or causes change.",
+    "def_ru": "Катализатор — то, что ускоряет процесс или даёт толчок переменам.",
+    "example": "The new manager acted as a catalyst for change in the company.",
+    "topic": "Наука",
+    "tags": ["B2", "Наука", "Бизнес"]
+  },
+  {
+    "word": "nostalgia",
+    "phonetic": "/nɒˈstæl.dʒə/",
+    "pos": "noun",
+    "def": "A sentimental longing or wistful affection for the past.",
+    "def_ru": "Ностальгия — тёплая тоска по прошлому, по тому, что было.",
+    "example": "The old song filled her with nostalgia for her childhood.",
+    "topic": "Психология",
+    "tags": ["B1", "Психология", "Эмоции"]
+  },
+  {
+    "word": "aesthetic",
+    "phonetic": "/iːsˈθet.ɪk/",
+    "pos": "adjective",
+    "def": "Concerned with beauty or the appreciation of beauty.",
+    "def_ru": "Эстетический — связанный с красотой и её восприятием.",
+    "example": "The architect had a strong aesthetic sensibility.",
+    "topic": "Искусство",
+    "tags": ["B2", "Искусство", "Философия"]
+  },
+  {
+    "word": "collaborate",
+    "phonetic": "/kəˈlæb.ə.reɪt/",
+    "pos": "verb",
+    "def": "Work jointly on an activity or project.",
+    "def_ru": "Сотрудничать — работать совместно над проектом или задачей.",
+    "example": "The two companies agreed to collaborate on the new product.",
+    "topic": "Бизнес",
+    "tags": ["B1", "Бизнес", "Повседневная речь"]
+  },
+  {
+    "word": "phenomenon",
+    "phonetic": "/fɪˈnɒm.ɪ.nən/",
+    "pos": "noun",
+    "def": "A fact or situation that is observed to exist or happen, especially one whose cause is in question.",
+    "def_ru": "Явление, феномен — наблюдаемый факт или событие, требующее объяснения.",
+    "example": "The northern lights are a breathtaking natural phenomenon.",
+    "topic": "Наука",
+    "tags": ["B2", "Наука", "Повседневная речь"]
+  },
+  {
+    "word": "grateful",
+    "phonetic": "/ˈɡreɪt.fəl/",
+    "pos": "adjective",
+    "def": "Feeling or showing an appreciation of kindness.",
+    "def_ru": "Благодарный — испытывающий или выражающий признательность.",
+    "example": "I am so grateful for your help during that difficult time.",
+    "topic": "Повседневная речь",
+    "tags": ["A2", "Повседневная речь", "Эмоции"]
+  },
+  {
+    "word": "curious",
+    "phonetic": "/ˈkjʊə.ri.əs/",
+    "pos": "adjective",
+    "def": "Eager to know or learn something.",
+    "def_ru": "Любопытный — стремящийся узнавать и исследовать новое.",
+    "example": "She was curious about how the machine worked.",
+    "topic": "Повседневная речь",
+    "tags": ["A2", "Повседневная речь", "Психология"]
+  },
+  {
+    "word": "achieve",
+    "phonetic": "/əˈtʃiːv/",
+    "pos": "verb",
+    "def": "Successfully bring about or reach a desired objective by effort, skill, or courage.",
+    "def_ru": "Достигать — добиваться цели усилием или мастерством.",
+    "example": "Hard work helps you achieve your dreams.",
+    "topic": "Повседневная речь",
+    "tags": ["B1", "Повседневная речь", "Мотивация"]
+  },
+  {
+    "word": "negotiate",
+    "phonetic": "/nɪˈɡəʊ.ʃi.eɪt/",
+    "pos": "verb",
+    "def": "Try to reach an agreement or compromise by discussion.",
+    "def_ru": "Договариваться, вести переговоры — искать компромисс в диалоге.",
+    "example": "They had to negotiate the terms of the contract.",
+    "topic": "Бизнес",
+    "tags": ["B2", "Бизнес", "Повседневная речь"]
+  },
+  {
+    "word": "ambivalent",
+    "phonetic": "/æmˈbɪv.ə.lənt/",
+    "pos": "adjective",
+    "def": "Having mixed feelings or contradictory ideas about something.",
+    "def_ru": "Амбивалентный — испытывающий противоречивые чувства одновременно.",
+    "example": "She felt ambivalent about leaving her hometown.",
+    "topic": "Психология",
+    "tags": ["B2", "Психология", "Эмоции"]
+  },
+  {
+    "word": "profound",
+    "phonetic": "/prəˈfaʊnd/",
+    "pos": "adjective",
+    "def": "Very great or intense; having or showing great knowledge or insight.",
+    "def_ru": "Глубокий, profound — значительный и содержательный, затрагивающий суть.",
+    "example": "Reading that book had a profound effect on my worldview.",
+    "topic": "Философия",
+    "tags": ["B2", "Философия", "Литература"]
+  },
+  {
+    "word": "deliberate",
+    "phonetic": "/dɪˈlɪb.ər.ət/",
+    "pos": "adjective",
+    "def": "Done consciously and intentionally; carefully thought out.",
+    "def_ru": "Намеренный, осознанный — сделанный обдуманно, с умыслом.",
+    "example": "It was a deliberate decision to leave the city.",
+    "topic": "Повседневная речь",
+    "tags": ["B2", "Повседневная речь", "Психология"]
+  },
+  {
+    "word": "persevere",
+    "phonetic": "/ˌpɜː.sɪˈvɪər/",
+    "pos": "verb",
+    "def": "Continue in a course of action in spite of difficulty or opposition.",
+    "def_ru": "Настойчиво продолжать — не сдаваться, несмотря на трудности.",
+    "example": "If you persevere, you will eventually succeed.",
+    "topic": "Повседневная речь",
+    "tags": ["B1", "Повседневная речь", "Мотивация"]
   }
 ]

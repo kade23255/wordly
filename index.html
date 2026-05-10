@@ -53,6 +53,8 @@
     z-index: 0;
   }
   .site-wrap { position: relative; z-index: 1; }
+  @keyframes scanline { 0%{transform:translateY(-100%)} 100%{transform:translateY(100vh)} }
+  .scanline { position: fixed; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(transparent, rgba(240,237,232,0.04), transparent); animation: scanline 8s linear infinite; pointer-events: none; z-index: 0; }
 
   /* NAV */
   nav {
@@ -67,284 +69,120 @@
     backdrop-filter: blur(12px);
     z-index: 100;
   }
-  .logo {
-    font-family: 'Courier Prime', monospace;
-    font-size: 0.75rem;
-    letter-spacing: 0.35em;
-    text-transform: uppercase;
-    color: var(--white);
-    text-decoration: none;
-  }
+  .logo { font-family: 'Courier Prime', monospace; font-size: 0.75rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--white); text-decoration: none; }
   .nav-links { display: flex; gap: 2.5rem; list-style: none; }
-  .nav-links a {
-    font-family: 'Courier Prime', monospace;
-    font-size: 0.65rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--grey-light);
-    text-decoration: none;
-    transition: color 0.2s;
-  }
+  .nav-links a { font-family: 'Courier Prime', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--grey-light); text-decoration: none; transition: color 0.2s; }
   .nav-links a:hover { color: var(--white); }
-
-  /* AUTH AREA */
-  .auth-area { display: flex; align-items: center; gap: 1rem; }
-  .user-info { display: flex; align-items: center; gap: 0.75rem; }
-  .user-avatar {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    border: 1px solid var(--line);
-    filter: grayscale(1);
-  }
-  .user-name {
-    font-family: 'Courier Prime', monospace;
-    font-size: 0.65rem;
-    letter-spacing: 0.15em;
-    color: var(--grey-light);
-  }
-  .auth-btn {
-    font-family: 'Courier Prime', monospace;
-    font-size: 0.65rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--black);
-    background: var(--white);
-    border: none;
-    padding: 0.6rem 1.2rem;
-    cursor: none;
-    transition: opacity 0.2s;
-    text-decoration: none;
-    display: inline-block;
-  }
-  .auth-btn:hover { opacity: 0.8; }
-  .logout-btn {
-    font-family: 'Courier Prime', monospace;
-    font-size: 0.6rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--grey-mid);
-    background: transparent;
-    border: 1px solid var(--line);
-    padding: 0.5rem 0.9rem;
-    cursor: none;
-    transition: all 0.2s;
-  }
-  .logout-btn:hover { color: var(--white); border-color: var(--grey-mid); }
-
-  /* LOGIN SCREEN */
-  .login-screen {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 70vh;
-    padding: 3rem;
-    text-align: center;
-  }
-  .login-screen.visible { display: flex; }
-  .login-title {
-    font-size: clamp(3rem, 6vw, 5.5rem);
-    font-weight: 400;
-    line-height: 1;
-    letter-spacing: -0.02em;
-    margin-bottom: 1.5rem;
-  }
-  .login-title em { font-style: italic; color: var(--grey-mid); }
-  .login-sub {
-    font-size: 1.1rem;
-    color: var(--grey-light);
-    max-width: 400px;
-    line-height: 1.7;
-    margin-bottom: 3rem;
-  }
-  .login-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-family: 'Courier Prime', monospace;
-    font-size: 0.75rem;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--black);
-    background: var(--white);
-    border: none;
-    padding: 1rem 2rem;
-    cursor: none;
-    transition: opacity 0.2s;
-    text-decoration: none;
-  }
-  .login-btn:hover { opacity: 0.85; }
-  .login-btn svg { width: 18px; height: 18px; fill: var(--black); }
-  .login-note {
-    margin-top: 1.5rem;
-    font-family: 'Courier Prime', monospace;
-    font-size: 0.6rem;
-    letter-spacing: 0.15em;
-    color: var(--grey-mid);
-  }
-
-  /* LOADING */
-  .loading-screen {
-    display: none;
-    align-items: center;
-    justify-content: center;
-    min-height: 70vh;
-  }
-  .loading-screen.visible { display: flex; }
-  .loading-dots {
-    font-family: 'Courier Prime', monospace;
-    font-size: 0.7rem;
-    letter-spacing: 0.3em;
-    color: var(--grey-mid);
-    text-transform: uppercase;
-  }
-  @keyframes blink { 0%,100%{opacity:0.2} 50%{opacity:1} }
-  .loading-dots span { animation: blink 1.4s infinite; }
-  .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
-
-  /* MAIN CONTENT */
-  .main-content { display: none; }
-  .main-content.visible { display: block; }
-
-  /* HERO */
-  .hero { padding: 8rem 3rem 6rem; max-width: 900px; }
-  .hero-eyebrow {
-    font-family: 'Courier Prime', monospace;
-    font-size: 0.65rem;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--grey-mid);
-    margin-bottom: 2rem;
-  }
-  .hero-title {
-    font-size: clamp(3.5rem, 8vw, 7rem);
-    font-weight: 400;
-    line-height: 0.95;
-    letter-spacing: -0.02em;
-    margin-bottom: 2.5rem;
-  }
-  .hero-title em { font-style: italic; color: var(--grey-mid); }
-  .hero-sub { font-size: 1.15rem; color: var(--grey-light); max-width: 480px; line-height: 1.7; }
-
-  /* WORD OF DAY */
-  .word-of-day {
-    margin: 0 3rem;
-    padding: 4rem;
-    border: 1px solid var(--line);
-    position: relative;
-    overflow: hidden;
-  }
-  .word-of-day::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 1px; height: 100%;
-    background: linear-gradient(to bottom, transparent, var(--white), transparent);
-    opacity: 0.15;
-  }
-  .wod-label {
-    font-family: 'Courier Prime', monospace;
-    font-size: 0.6rem;
-    letter-spacing: 0.4em;
-    text-transform: uppercase;
-    color: var(--grey-mid);
-    margin-bottom: 3rem;
-  }
-  .wod-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
-  .wod-word { font-size: clamp(4rem, 7vw, 6.5rem); font-weight: 400; line-height: 1; letter-spacing: -0.03em; }
-  .wod-phonetic { font-family: 'Courier Prime', monospace; font-size: 0.85rem; color: var(--grey-mid); margin-top: 0.75rem; }
-  .wod-right { padding-top: 0.5rem; }
-  .wod-pos { font-family: 'Courier Prime', monospace; font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--grey-mid); margin-bottom: 1rem; }
-  .wod-def { font-size: 1.35rem; line-height: 1.55; color: var(--white); margin-bottom: 1.5rem; }
-  .wod-example { font-style: italic; font-size: 1.05rem; color: var(--grey-light); line-height: 1.6; border-left: 1px solid var(--line); padding-left: 1.25rem; }
-  .wod-actions { margin-top: 2rem; display: flex; gap: 0.75rem; }
-  .wod-btn {
-    font-family: 'Courier Prime', monospace;
-    font-size: 0.6rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    border: 1px solid var(--line);
-    color: var(--grey-mid);
-    background: transparent;
-    padding: 0.5rem 1rem;
-    cursor: none;
-    transition: all 0.2s;
-  }
-  .wod-btn:hover { color: var(--white); border-color: var(--grey-mid); }
-  .wod-btn.primary { color: var(--black); background: var(--white); border-color: var(--white); }
-  .wod-btn.primary:hover { opacity: 0.85; }
-  .wod-tags { margin-top: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap; }
-  .tag {
-    font-family: 'Courier Prime', monospace;
-    font-size: 0.6rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    border: 1px solid var(--grey-dim);
-    color: var(--grey-mid);
-    padding: 0.3rem 0.7rem;
-    transition: all 0.2s;
-    cursor: none;
-  }
-  .tag:hover { border-color: var(--white); color: var(--white); }
+  .nav-user { display: flex; align-items: center; gap: 1rem; }
+  .nav-username { font-family: 'Courier Prime', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: var(--grey-light); }
+  .nav-reset { font-family: 'Courier Prime', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--grey-mid); background: transparent; border: 1px solid var(--line); padding: 0.4rem 0.8rem; cursor: none; transition: all 0.2s; }
+  .nav-reset:hover { color: var(--white); border-color: var(--grey-mid); }
 
   /* TOAST */
-  .toast {
-    position: fixed;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%) translateY(100px);
-    background: var(--white);
-    color: var(--black);
-    font-family: 'Courier Prime', monospace;
-    font-size: 0.65rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    padding: 0.8rem 1.5rem;
-    transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
-    z-index: 1000;
-    pointer-events: none;
-  }
+  .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--white); color: var(--black); font-family: 'Courier Prime', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; padding: 0.8rem 1.5rem; transition: transform 0.3s cubic-bezier(0.16,1,0.3,1); z-index: 1000; pointer-events: none; }
   .toast.show { transform: translateX(-50%) translateY(0); }
 
-  .divider { height: 1px; background: var(--line); margin: 5rem 3rem; }
-  .section-label {
-    font-family: 'Courier Prime', monospace;
-    font-size: 0.6rem;
-    letter-spacing: 0.4em;
-    text-transform: uppercase;
-    color: var(--grey-mid);
-    padding: 0 3rem;
-    margin-bottom: 2rem;
-  }
+  /* SCREENS */
+  .screen { display: none; }
+  .screen.visible { display: block; }
 
-  /* TOPICS */
-  .topics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1px;
-    margin: 0 3rem;
-    border: 1px solid var(--line);
+  /* LOGIN SCREEN */
+  .login-wrap {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: calc(100vh - 80px); padding: 3rem; text-align: center;
   }
-  .topic-card {
-    padding: 2.5rem 2rem;
-    border: 0;
-    background: transparent;
-    cursor: none;
-    text-align: left;
-    transition: background 0.2s;
+  .login-title { font-size: clamp(3rem, 6vw, 5rem); font-weight: 400; line-height: 1; letter-spacing: -0.02em; margin-bottom: 1.5rem; }
+  .login-title em { font-style: italic; color: var(--grey-mid); }
+  .login-sub { font-size: 1.1rem; color: var(--grey-light); max-width: 400px; line-height: 1.7; margin-bottom: 2.5rem; }
+  .login-input {
+    width: 100%; max-width: 340px;
+    background: transparent; border: 1px solid rgba(240,237,232,0.2);
+    color: var(--white); font-family: 'EB Garamond', serif; font-size: 1.15rem;
+    padding: 0.85rem 1.2rem; outline: none; margin-bottom: 0.75rem;
+    transition: border-color 0.2s;
+  }
+  .login-input:focus { border-color: rgba(240,237,232,0.5); }
+  .login-input::placeholder { color: var(--grey-mid); }
+  .btn-primary {
+    display: inline-block; font-family: 'Courier Prime', monospace; font-size: 0.7rem;
+    letter-spacing: 0.25em; text-transform: uppercase; color: var(--black);
+    background: var(--white); border: none; padding: 0.85rem 2rem; cursor: none;
+    transition: opacity 0.2s; text-decoration: none; width: 100%; max-width: 340px; text-align: center;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+  .login-note { margin-top: 2rem; font-family: 'Courier Prime', monospace; font-size: 0.6rem; letter-spacing: 0.15em; color: var(--grey-mid); }
+
+  /* ONBOARDING */
+  .onboard-wrap {
+    max-width: 680px; margin: 0 auto;
+    padding: 5rem 3rem; display: flex; flex-direction: column; gap: 3.5rem;
+  }
+  .onboard-heading { font-size: clamp(2rem, 4vw, 3rem); font-weight: 400; letter-spacing: -0.02em; }
+  .onboard-heading em { font-style: italic; color: var(--grey-mid); }
+  .onboard-section { display: flex; flex-direction: column; gap: 1rem; }
+  .onboard-label { font-family: 'Courier Prime', monospace; font-size: 0.6rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--grey-mid); }
+  .chip-group { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .chip {
+    font-family: 'Courier Prime', monospace; font-size: 0.65rem; letter-spacing: 0.15em;
+    text-transform: uppercase; border: 1px solid var(--grey-dim); color: var(--grey-mid);
+    padding: 0.55rem 1rem; cursor: none; transition: all 0.2s; background: transparent;
+  }
+  .chip:hover { border-color: var(--grey-light); color: var(--grey-light); }
+  .chip.selected { border-color: var(--white); color: var(--white); background: rgba(240,237,232,0.06); }
+  .onboard-btn { align-self: flex-start; }
+
+  /* MAIN SCREEN */
+
+  /* HERO */
+  .hero {
+    text-align: center;
+    padding: 6rem 3rem 4rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .hero-eyebrow { font-family: 'Courier Prime', monospace; font-size: 0.6rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--grey-mid); margin-bottom: 1.5rem; }
+  .hero-title { font-size: clamp(3.5rem, 8vw, 7rem); font-weight: 400; line-height: 0.95; letter-spacing: -0.02em; margin-bottom: 1.5rem; }
+  .hero-title em { font-style: italic; color: var(--grey-mid); }
+  .hero-sub { font-size: 1.1rem; color: var(--grey-light); }
+
+  /* WORD CARDS */
+  .words-section { padding: 4rem 3rem; display: flex; flex-direction: column; gap: 2px; }
+  .word-card {
+    border: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
     position: relative;
     overflow: hidden;
   }
-  .topic-card::after { content:''; position:absolute; inset:0; background:var(--white); opacity:0; transition:opacity 0.2s; }
-  .topic-card:hover::after { opacity:0.04; }
-  .topic-card.active { background: var(--grey-dim); }
-  .topic-icon { font-size: 1.5rem; margin-bottom: 1rem; display: block; filter: grayscale(1); }
-  .topic-name { font-family: 'EB Garamond', serif; font-size: 1.1rem; color: var(--white); display: block; margin-bottom: 0.3rem; }
-  .topic-count { font-family: 'Courier Prime', monospace; font-size: 0.6rem; letter-spacing: 0.2em; color: var(--grey-mid); }
+  .word-card::before { content: ''; position: absolute; top: 0; left: 0; width: 1px; height: 100%; background: linear-gradient(to bottom, transparent, var(--white), transparent); opacity: 0.1; }
+  .wc-left { padding: 3.5rem 3rem; border-right: 1px solid var(--line); }
+  .wc-right { padding: 3.5rem 3rem; }
+  .wc-date { font-family: 'Courier Prime', monospace; font-size: 0.55rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--grey-mid); margin-bottom: 2rem; }
+  .wc-word { font-size: clamp(3rem, 6vw, 5.5rem); font-weight: 400; line-height: 1; letter-spacing: -0.03em; margin-bottom: 0.5rem; }
+  .wc-phonetic { font-family: 'Courier Prime', monospace; font-size: 0.8rem; color: var(--grey-mid); margin-bottom: 0.75rem; }
+  .wc-pos { font-family: 'Courier Prime', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--grey-mid); }
+  .wc-ru { font-size: 1.5rem; font-weight: 400; margin-bottom: 1.25rem; line-height: 1.3; }
+  .wc-en { font-size: 1rem; color: var(--grey-light); line-height: 1.6; margin-bottom: 1.25rem; }
+  .wc-example { font-style: italic; font-size: 0.95rem; color: var(--grey-mid); line-height: 1.6; border-left: 1px solid var(--line); padding-left: 1.25rem; margin-bottom: 2rem; }
+  .wc-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .wc-btn {
+    font-family: 'Courier Prime', monospace; font-size: 0.6rem; letter-spacing: 0.2em;
+    text-transform: uppercase; border: 1px solid var(--line); color: var(--grey-mid);
+    background: transparent; padding: 0.55rem 1.1rem; cursor: none; transition: all 0.2s;
+  }
+  .wc-btn:hover { color: var(--white); border-color: var(--grey-mid); }
+  .wc-btn.primary { color: var(--black); background: var(--white); border-color: var(--white); }
+  .wc-btn.primary:hover { opacity: 0.85; }
+  .wc-btn.done-known { color: var(--white); border-color: var(--white); background: rgba(240,237,232,0.08); }
+  .wc-btn.done-learning { color: var(--grey-light); border-color: var(--grey-mid); }
+  .wc-tags { margin-top: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .tag { font-family: 'Courier Prime', monospace; font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase; border: 1px solid var(--grey-dim); color: var(--grey-mid); padding: 0.3rem 0.6rem; }
+
+  .divider { height: 1px; background: var(--line); margin: 0 3rem; }
+  .section-label { font-family: 'Courier Prime', monospace; font-size: 0.6rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--grey-mid); padding: 0 3rem; margin-bottom: 2rem; }
 
   /* STATS */
-  .stats-section { padding: 0 3rem; }
+  .stats-section { padding: 4rem 3rem 0; }
   .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; border: 1px solid var(--line); margin-bottom: 3rem; }
   .stat-cell { padding: 2.5rem 2rem; border-right: 1px solid var(--line); }
   .stat-cell:last-child { border-right: 0; }
@@ -362,10 +200,9 @@
   .cal-day.done { background: rgba(240,237,232,0.15); border-color: rgba(240,237,232,0.1); }
   .cal-day.today { background: var(--white); }
   .cal-day.missed { background: rgba(240,237,232,0.03); border-color: var(--line); }
-  .cal-day:hover { border-color: var(--grey-mid); }
 
   /* PROGRESS */
-  .progress-section { padding: 0 3rem; margin-top: 3rem; }
+  .progress-section { padding: 3rem 3rem 0; }
   .progress-item { display: grid; grid-template-columns: 180px 1fr 60px; align-items: center; gap: 2rem; padding: 1.25rem 0; border-bottom: 1px solid var(--line); }
   .progress-name { font-family: 'Courier Prime', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--grey-light); }
   .progress-bar-wrap { height: 1px; background: var(--grey-dim); }
@@ -373,29 +210,17 @@
   .progress-pct { font-family: 'Courier Prime', monospace; font-size: 0.7rem; color: var(--grey-mid); text-align: right; }
 
   /* WORD TABLE */
-  .wordlist-section { padding: 0 3rem; margin-top: 5rem; }
-  .wordlist-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 0; }
+  .wordlist-section { padding: 4rem 3rem; }
+  .wordlist-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; }
   .wordlist-title { font-size: 2.5rem; font-weight: 400; letter-spacing: -0.02em; }
   .wordlist-controls { display: flex; gap: 1rem; }
-  .ctrl-btn {
-    font-family: 'Courier Prime', monospace;
-    font-size: 0.6rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--grey-mid);
-    background: transparent;
-    border: 1px solid var(--line);
-    padding: 0.5rem 1rem;
-    cursor: none;
-    transition: all 0.2s;
-  }
+  .ctrl-btn { font-family: 'Courier Prime', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--grey-mid); background: transparent; border: 1px solid var(--line); padding: 0.5rem 1rem; cursor: none; transition: all 0.2s; }
   .ctrl-btn:hover { color: var(--white); border-color: var(--grey-mid); }
   .ctrl-btn.active { color: var(--white); border-color: var(--white); background: rgba(240,237,232,0.05); }
   .word-table { width: 100%; border-collapse: collapse; }
   .word-table thead tr { border-bottom: 1px solid var(--line); }
   .word-table th { font-family: 'Courier Prime', monospace; font-size: 0.55rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--grey-mid); padding: 1.2rem 1rem; text-align: left; font-weight: 400; }
-  .word-table td { padding: 1.4rem 1rem; border-bottom: 1px solid var(--line); font-size: 1rem; transition: background 0.15s; }
-  .word-table tr:hover td { background: rgba(240,237,232,0.02); }
+  .word-table td { padding: 1.4rem 1rem; border-bottom: 1px solid var(--line); font-size: 1rem; }
   .w-word { font-size: 1.2rem; letter-spacing: -0.01em; }
   .w-pos { font-family: 'Courier Prime', monospace; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--grey-mid); }
   .w-def { color: var(--grey-light); font-size: 0.95rem; }
@@ -404,40 +229,31 @@
   .w-status.known { background: var(--white); }
   .w-status.learning { background: var(--grey-mid); }
 
-  /* ART */
-  .art-section { margin: 5rem 3rem 0; border: 1px solid var(--line); overflow: hidden; }
-  .art-header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; border-bottom: 1px solid var(--line); }
-  .art-label { font-family: 'Courier Prime', monospace; font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--grey-mid); }
-  .art-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); }
-  .art-card { aspect-ratio: 4/3; background: var(--grey-dim); position: relative; overflow: hidden; cursor: none; }
-  .art-card canvas { width: 100%; height: 100%; display: block; }
-  .art-caption { position: absolute; bottom: 0; left: 0; right: 0; padding: 1rem 1.2rem; background: linear-gradient(transparent, rgba(8,8,8,0.85)); opacity: 0; transition: opacity 0.3s; }
-  .art-card:hover .art-caption { opacity: 1; }
-  .art-word { font-size: 1rem; color: var(--white); margin-bottom: 0.2rem; }
-  .art-word-def { font-family: 'Courier Prime', monospace; font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--grey-light); }
-
-  footer { margin-top: 8rem; padding: 3rem; border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
+  footer { padding: 3rem; border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; margin-top: 5rem; }
   .footer-copy { font-family: 'Courier Prime', monospace; font-size: 0.6rem; letter-spacing: 0.2em; color: var(--grey-mid); }
-  .github-link { font-family: 'Courier Prime', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--grey-mid); text-decoration: none; transition: color 0.2s; display: flex; align-items: center; gap: 0.6rem; }
-  .github-link:hover { color: var(--white); }
-  .gh-icon { width: 16px; height: 16px; fill: currentColor; }
 
-  @keyframes scanline { 0%{transform:translateY(-100%)} 100%{transform:translateY(100vh)} }
-  .scanline { position: fixed; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(transparent, rgba(240,237,232,0.04), transparent); animation: scanline 8s linear infinite; pointer-events: none; z-index: 0; }
+  /* LOADING */
+  .loading-wrap { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 80px); }
+  .loading-dots { font-family: 'Courier Prime', monospace; font-size: 0.7rem; letter-spacing: 0.3em; color: var(--grey-mid); text-transform: uppercase; }
+  @keyframes blink { 0%,100%{opacity:0.2} 50%{opacity:1} }
+  .loading-dots span { animation: blink 1.4s infinite; }
+  .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
 
   @media (max-width: 768px) {
     nav { padding: 1.5rem; }
     .nav-links { display: none; }
-    .hero { padding: 4rem 1.5rem 3rem; }
-    .word-of-day { margin: 0 1.5rem; padding: 2.5rem; }
-    .wod-inner { grid-template-columns: 1fr; gap: 2rem; }
+    .hero { padding: 3rem 1.5rem 2.5rem; }
+    .words-section { padding: 2rem 1.5rem; }
+    .word-card { grid-template-columns: 1fr; }
+    .wc-left { border-right: none; border-bottom: 1px solid var(--line); padding: 2rem 1.5rem; }
+    .wc-right { padding: 2rem 1.5rem; }
     .stats-grid { grid-template-columns: repeat(2, 1fr); }
-    .stats-section, .section-label, .wordlist-section, .progress-section { padding: 0 1.5rem; }
-    .topics-grid, .art-section { margin: 0 1.5rem; }
-    .art-grid { grid-template-columns: 1fr; }
-    .divider { margin: 3rem 1.5rem; }
+    .stats-section, .progress-section, .wordlist-section, .section-label { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .divider { margin: 0 1.5rem; }
+    .progress-item { grid-template-columns: 100px 1fr 40px; gap: 1rem; }
+    .onboard-wrap { padding: 3rem 1.5rem; }
     footer { padding: 2rem 1.5rem; flex-direction: column; gap: 1rem; }
-    .progress-item { grid-template-columns: 120px 1fr 45px; gap: 1rem; }
   }
 </style>
 </head>
@@ -453,70 +269,89 @@
   <nav>
     <a href="#" class="logo">Wordly</a>
     <ul class="nav-links">
-      <li><a href="#today">Сегодня</a></li>
-      <li><a href="#topics">Темы</a></li>
+      <li><a href="#words">Слова</a></li>
       <li><a href="#stats">Статистика</a></li>
-      <li><a href="#gallery">Арты</a></li>
+      <li><a href="#history">История</a></li>
     </ul>
-    <div class="auth-area" id="authArea">
-      <span class="user-name" id="navUsername" style="display:none;font-family:'Courier Prime',monospace;font-size:0.65rem;letter-spacing:0.15em;color:var(--grey-light);"></span>
-      <button class="logout-btn" id="navLogout" style="display:none;" onclick="logout()">Сбросить</button>
+    <div class="nav-user" id="navUser" style="display:none;">
+      <span class="nav-username" id="navUsername"></span>
+      <button class="nav-reset" onclick="resetAll()">Сбросить</button>
     </div>
   </nav>
 
-  <!-- LOGIN SCREEN -->
-  <div class="login-screen" id="loginScreen">
-    <p class="hero-eyebrow" style="margin-bottom:1.5rem;">Словарный тренажёр · Обновляется ежедневно</p>
-    <h1 class="login-title">Одно слово.<br><em>Каждый день.</em></h1>
-    <p class="login-sub">Расширяй словарный запас без лишнего шума. Данные сохраняются в твоём браузере.</p>
-    <div style="width:100%;max-width:380px;display:flex;flex-direction:column;gap:0.75rem;">
-      <input id="nameInput" type="text" placeholder="Как тебя зовут?"
-        style="width:100%;background:transparent;border:1px solid rgba(240,237,232,0.2);color:var(--white);font-family:'EB Garamond',serif;font-size:1.1rem;padding:0.9rem 1.2rem;outline:none;"
-        onkeydown="if(event.key==='Enter')startLocal()">
-      <a href="#" class="login-btn" style="justify-content:center;" onclick="startLocal()">Начать</a>
+  <!-- LOGIN -->
+  <div class="screen" id="screenLogin">
+    <div class="login-wrap">
+      <p class="hero-eyebrow" style="margin-bottom:1.5rem;">Словарный тренажёр · Обновляется ежедневно</p>
+      <h1 class="login-title">Одно слово.<br><em>Каждый день.</em></h1>
+      <p class="login-sub">Расширяй словарный запас без лишнего шума. Данные сохраняются в твоём браузере.</p>
+      <input class="login-input" id="nameInput" type="text" placeholder="Как тебя зовут?"
+        onkeydown="if(event.key==='Enter')goToOnboarding()">
+      <a href="#" class="btn-primary" onclick="goToOnboarding()">Продолжить →</a>
+      <p class="login-note">Без регистрации · Данные хранятся локально</p>
     </div>
-    <p class="login-note" style="margin-top:2rem;">Прогресс сохраняется локально в браузере · Без регистрации</p>
+  </div>
+
+  <!-- ONBOARDING -->
+  <div class="screen" id="screenOnboarding">
+    <div class="onboard-wrap">
+      <h2 class="onboard-heading">Настроим<br><em>твой словарь</em></h2>
+
+      <div class="onboard-section">
+        <p class="onboard-label">// что хочешь учить?</p>
+        <div class="chip-group" id="topicChips">
+          <button class="chip selected" data-value="all" onclick="toggleChip(this,'topics')">Всё подряд</button>
+          <button class="chip" data-value="Повседневная речь" onclick="toggleChip(this,'topics')">Повседневная речь</button>
+          <button class="chip" data-value="Бизнес" onclick="toggleChip(this,'topics')">Бизнес</button>
+          <button class="chip" data-value="Наука" onclick="toggleChip(this,'topics')">Наука</button>
+          <button class="chip" data-value="Искусство" onclick="toggleChip(this,'topics')">Искусство</button>
+          <button class="chip" data-value="Философия" onclick="toggleChip(this,'topics')">Философия</button>
+          <button class="chip" data-value="Литература" onclick="toggleChip(this,'topics')">Литература</button>
+          <button class="chip" data-value="Психология" onclick="toggleChip(this,'topics')">Психология</button>
+        </div>
+      </div>
+
+      <div class="onboard-section">
+        <p class="onboard-label">// твой уровень английского</p>
+        <div class="chip-group" id="levelChips">
+          <button class="chip" data-value="beginner" onclick="selectOne(this,'levelChips')">Начинающий (A2–B1)</button>
+          <button class="chip selected" data-value="intermediate" onclick="selectOne(this,'levelChips')">Средний (B1–B2)</button>
+          <button class="chip" data-value="advanced" onclick="selectOne(this,'levelChips')">Продвинутый (C1–C2)</button>
+        </div>
+      </div>
+
+      <div class="onboard-section">
+        <p class="onboard-label">// слов в день</p>
+        <div class="chip-group" id="countChips">
+          <button class="chip" data-value="1" onclick="selectOne(this,'countChips')">1 слово</button>
+          <button class="chip selected" data-value="3" onclick="selectOne(this,'countChips')">3 слова</button>
+          <button class="chip" data-value="5" onclick="selectOne(this,'countChips')">5 слов</button>
+          <button class="chip" data-value="10" onclick="selectOne(this,'countChips')">10 слов</button>
+        </div>
+      </div>
+
+      <a href="#" class="btn-primary onboard-btn" onclick="finishOnboarding()">Начать учить →</a>
+    </div>
   </div>
 
   <!-- LOADING -->
-  <div class="loading-screen" id="loadingScreen">
-    <div class="loading-dots">Загрузка <span>.</span><span>.</span><span>.</span></div>
+  <div class="screen" id="screenLoading">
+    <div class="loading-wrap">
+      <div class="loading-dots">Загрузка <span>.</span><span>.</span><span>.</span></div>
+    </div>
   </div>
 
-  <!-- MAIN CONTENT -->
-  <div class="main-content" id="mainContent">
+  <!-- MAIN -->
+  <div class="screen" id="screenMain">
 
     <section class="hero">
-      <p class="hero-eyebrow">Словарный тренажёр · Обновляется ежедневно</p>
+      <p class="hero-eyebrow" id="heroEyebrow">Словарный тренажёр · Обновляется ежедневно</p>
       <h1 class="hero-title">Одно слово.<br><em>Каждый день.</em></h1>
-      <p class="hero-sub" id="heroSub">Загрузка...</p>
+      <p class="hero-sub" id="heroSub"></p>
     </section>
 
-    <section class="word-of-day" id="today">
-      <p class="wod-label" id="wodLabel">// слово дня</p>
-      <div class="wod-inner">
-        <div class="wod-left">
-          <div class="wod-word" id="wodWord">—</div>
-          <div class="wod-phonetic" id="wodPhonetic"></div>
-        </div>
-        <div class="wod-right">
-          <div class="wod-pos" id="wodPos"></div>
-          <div class="wod-def" id="wodDef"></div>
-          <div class="wod-example" id="wodExample"></div>
-          <div class="wod-actions">
-            <button class="wod-btn primary" onclick="markWord('known')">✓ Знаю</button>
-            <button class="wod-btn" onclick="markWord('learning')">◈ Учу</button>
-          </div>
-          <div class="wod-tags" id="wodTags"></div>
-        </div>
-      </div>
-    </section>
-
-    <div class="divider"></div>
-
-    <section id="topics">
-      <p class="section-label">// выберите тематику</p>
-      <div class="topics-grid" id="topicsGrid"></div>
+    <section class="words-section" id="words">
+      <div id="wordCards"></div>
     </section>
 
     <div class="divider"></div>
@@ -526,13 +361,12 @@
       <div class="stats-grid">
         <div class="stat-cell"><div class="stat-num" id="statWords">0</div><div class="stat-label">Слов изучено</div></div>
         <div class="stat-cell"><div class="stat-num" id="statStreak">0</div><div class="stat-label">Серия дней</div></div>
-        <div class="stat-cell"><div class="stat-num" id="statAccuracy">0</div><div class="stat-label">% точности</div></div>
-        <div class="stat-cell"><div class="stat-num" id="statTopics">0</div><div class="stat-label">Тем пройдено</div></div>
+        <div class="stat-cell"><div class="stat-num" id="statAccuracy">0</div><div class="stat-label">% знаю</div></div>
+        <div class="stat-cell"><div class="stat-num" id="statTotal">0</div><div class="stat-label">Всего слов</div></div>
       </div>
-
       <div class="streak-wrap">
         <div class="streak-header">
-          <span class="streak-title" id="streakTitle">// активность · май 2026</span>
+          <span class="streak-title" id="streakTitle">// активность</span>
           <span style="font-family:'Courier Prime',monospace;font-size:0.65rem;color:var(--grey-mid);" id="streakBadge">◈ 0 дней подряд</span>
         </div>
         <div class="cal-months">
@@ -550,9 +384,9 @@
       <div id="progressList"></div>
     </div>
 
-    <div class="divider"></div>
+    <div class="divider" style="margin-top:3rem;"></div>
 
-    <section class="wordlist-section" id="wordlist">
+    <section class="wordlist-section" id="history">
       <div class="wordlist-header">
         <h2 class="wordlist-title">История слов</h2>
         <div class="wordlist-controls">
@@ -563,382 +397,331 @@
       </div>
       <table class="word-table">
         <thead><tr>
-          <th>Слово</th><th>Часть речи</th><th>Определение</th><th>Дата</th><th>Статус</th>
+          <th>Слово</th><th>Часть речи</th><th>Значение (RU)</th><th>Статус</th>
         </tr></thead>
         <tbody id="wordTableBody"></tbody>
       </table>
     </section>
 
-    <div class="divider"></div>
-
-    <section id="gallery">
-      <p class="section-label">// арты к словам</p>
-      <div class="art-section">
-        <div class="art-header">
-          <span class="art-label">Визуальные ассоциации</span>
-          <span class="art-label">Алгоритмическая генерация</span>
-        </div>
-        <div class="art-grid" id="artGrid"></div>
-      </div>
-    </section>
-
     <footer>
-      <span class="footer-copy">© 2026 Wordly · Открытый исходный код</span>
-      <a href="https://github.com" class="github-link">
-        <svg class="gh-icon" viewBox="0 0 24 24"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
-        github.com/wordly
-      </a>
+      <span class="footer-copy">© 2026 Wordly · Данные хранятся в вашем браузере</span>
     </footer>
   </div>
+
 </div>
 
 <script>
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
-const WORDS_RAW_URL = 'https://raw.githubusercontent.com/kade23255/wordly/main/words.json';
-const STORAGE_KEY = 'wordly-data';
+const WORDS_URL = 'https://raw.githubusercontent.com/kade23255/wordly/main/words.json';
+const STORAGE_KEY = 'wordly-v2';
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
-let userData = { name: '', words: {}, streak: [], activeTopic: 'all' };
+let userData = {
+  name: '',
+  prefs: { topics: ['all'], level: 'intermediate', wordsPerDay: 3 },
+  words: {},
+  streak: [],
+  activeTopic: 'all'
+};
 let allWords = [];
+let todayWords = [];
 let currentFilter = 'all';
+
+// ─── PERSISTENCE ──────────────────────────────────────────────────────────────
+function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(userData)); }
+function load() {
+  try { const r = localStorage.getItem(STORAGE_KEY); return r ? JSON.parse(r) : null; } catch(e) { return null; }
+}
 
 // ─── CURSOR ───────────────────────────────────────────────────────────────────
 const cursor = document.getElementById('cursor');
-const ring = document.getElementById('cursorRing');
+const ring   = document.getElementById('cursorRing');
 let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove', e => {
-  mx=e.clientX; my=e.clientY;
-  cursor.style.left=mx+'px'; cursor.style.top=my+'px';
-});
-(function animRing(){
-  rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12;
-  ring.style.left=rx+'px'; ring.style.top=ry+'px';
-  requestAnimationFrame(animRing);
-})();
+document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cursor.style.left=mx+'px'; cursor.style.top=my+'px'; });
+(function animRing(){ rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(animRing); })();
 
 // ─── TOAST ────────────────────────────────────────────────────────────────────
 function showToast(msg) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
+  t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2500);
 }
 
 // ─── SCREENS ──────────────────────────────────────────────────────────────────
-function showScreen(name) {
-  document.getElementById('loginScreen').classList.toggle('visible', name==='login');
-  document.getElementById('loadingScreen').classList.toggle('visible', name==='loading');
-  document.getElementById('mainContent').classList.toggle('visible', name==='main');
+function showScreen(id) {
+  ['screenLogin','screenOnboarding','screenLoading','screenMain'].forEach(s => {
+    document.getElementById(s).classList.toggle('visible', s === id);
+  });
 }
 
-// ─── LOCAL STORAGE ────────────────────────────────────────────────────────────
-function saveLocal() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
+// ─── ONBOARDING CHIPS ─────────────────────────────────────────────────────────
+function toggleChip(btn, group) {
+  if (group !== 'topics') return;
+  const all = btn.dataset.value === 'all';
+  const chips = document.querySelectorAll('#topicChips .chip');
+  if (all) {
+    chips.forEach(c => c.classList.remove('selected'));
+    btn.classList.add('selected');
+  } else {
+    document.querySelector('#topicChips .chip[data-value="all"]').classList.remove('selected');
+    btn.classList.toggle('selected');
+    if (!document.querySelector('#topicChips .chip.selected')) btn.classList.add('selected');
+  }
 }
 
-function loadLocal() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch(e) {}
-  return null;
+function selectOne(btn, groupId) {
+  document.querySelectorAll('#' + groupId + ' .chip').forEach(c => c.classList.remove('selected'));
+  btn.classList.add('selected');
 }
 
-// ─── AUTH ─────────────────────────────────────────────────────────────────────
-function startLocal() {
-  const input = document.getElementById('nameInput');
-  const name = input.value.trim() || 'Гость';
-  userData = { name, words: {}, streak: [], activeTopic: 'all' };
-  saveLocal();
-  renderNavUser(name);
+// ─── LOGIN → ONBOARDING ───────────────────────────────────────────────────────
+function goToOnboarding() {
+  const name = document.getElementById('nameInput').value.trim() || 'Гость';
+  userData.name = name;
+  showScreen('screenOnboarding');
+}
+
+function finishOnboarding() {
+  const topics = [...document.querySelectorAll('#topicChips .chip.selected')].map(c => c.dataset.value);
+  const level  = document.querySelector('#levelChips .chip.selected')?.dataset.value || 'intermediate';
+  const wpd    = parseInt(document.querySelector('#countChips .chip.selected')?.dataset.value || '3');
+  userData.prefs = { topics, level, wordsPerDay: wpd };
+  save();
+  showScreen('screenLoading');
   loadAndRender();
 }
 
-function logout() {
-  localStorage.removeItem(STORAGE_KEY);
-  userData = { name: '', words: {}, streak: [], activeTopic: 'all' };
-  document.getElementById('navUsername').style.display = 'none';
-  document.getElementById('navLogout').style.display = 'none';
-  showScreen('login');
+// ─── WORD SELECTION ───────────────────────────────────────────────────────────
+const LEVEL_MAP = {
+  beginner:     ['A1','A2','B1'],
+  intermediate: ['B1','B2'],
+  advanced:     ['C1','C2']
+};
+
+function buildQueue(words) {
+  const levels  = LEVEL_MAP[userData.prefs.level] || ['B1','B2'];
+  const topics  = userData.prefs.topics;
+  const all     = topics.includes('all');
+
+  return words.filter(w => {
+    const lvl = w.tags[0];
+    if (!levels.includes(lvl)) return false;
+    if (all) return true;
+    return topics.includes(w.topic);
+  }).sort((a, b) => {
+    const order = { undefined: 0, learning: 1, known: 2 };
+    return (order[userData.words[a.word]?.status] || 0) - (order[userData.words[b.word]?.status] || 0);
+  });
 }
 
-function renderNavUser(name) {
-  const el = document.getElementById('navUsername');
-  el.textContent = name;
-  el.style.display = 'inline';
-  document.getElementById('navLogout').style.display = 'inline-block';
-}
-
-// ─── WORDS DATA ───────────────────────────────────────────────────────────────
-async function loadWords() {
-  try {
-    const res = await fetch(WORDS_RAW_URL);
-    if (res.ok) return res.json();
-  } catch(e) {}
-  // Fallback built-in words
-  return FALLBACK_WORDS;
-}
-
-const FALLBACK_WORDS = [
-  { date: '2026-05-10', word: 'ephemeral', phonetic: '/ɪˈfem.ər.əl/', pos: 'adjective', def: 'Lasting for a very short time; transitory by nature.', example: 'The ephemeral beauty of cherry blossoms makes them all the more precious.', topic: 'Философия', tags: ['C1','Поэзия','Философия'] },
-  { date: '2026-05-09', word: 'laconic', phonetic: '/ləˈkɒn.ɪk/', pos: 'adjective', def: 'Using very few words; brief and concise.', example: 'His laconic reply left everyone guessing.', topic: 'Литература', tags: ['B2','Риторика'] },
-  { date: '2026-05-08', word: 'chiaroscuro', phonetic: '/kiˌɑːrəˈsk(j)ʊərəʊ/', pos: 'noun', def: 'The treatment of light and shadow in drawing and painting.', example: 'Caravaggio mastered chiaroscuro to dramatic effect.', topic: 'Искусство', tags: ['C2','Живопись','Итальянский'] },
-  { date: '2026-05-07', word: 'melancholy', phonetic: '/ˈmel.ən.kɒl.i/', pos: 'noun', def: 'A feeling of pensive sadness, typically with no obvious cause.', example: 'A deep melancholy settled over him as autumn approached.', topic: 'Философия', tags: ['B2','Эмоции'] },
-  { date: '2026-05-06', word: 'penumbra', phonetic: '/pɪˈnʌm.brə/', pos: 'noun', def: 'The partially shaded outer region of a shadow cast by an opaque object.', example: 'The moon moved into the penumbra of Earth\'s shadow.', topic: 'Наука', tags: ['C1','Астрономия'] },
-  { date: '2026-05-05', word: 'liminal', phonetic: '/ˈlɪm.ɪ.nəl/', pos: 'adjective', def: 'Occupying a position at, or on both sides of, a boundary or threshold.', example: 'The airport is a liminal space — neither here nor there.', topic: 'Философия', tags: ['C2','Антропология'] },
-  { date: '2026-05-04', word: 'petrichor', phonetic: '/ˈpet.rɪ.kɔːr/', pos: 'noun', def: 'A pleasant smell that frequently accompanies the first rain after a long period of warm, dry weather.', example: 'She stepped outside and inhaled the petrichor rising from the warm earth.', topic: 'Наука', tags: ['C1','Природа'] },
-  { date: '2026-05-03', word: 'sonder', phonetic: '/ˈsɒn.dər/', pos: 'noun', def: 'The realization that each passerby has a life as vivid and complex as one\'s own.', example: 'Walking through the city, he was overcome by a sudden sonder.', topic: 'Философия', tags: ['C2','Психология'] },
-];
-
-function todayStr() {
-  return new Date().toISOString().slice(0,10);
-}
-
-function getTodayWord(words) {
+function getTodayWords(words) {
   const today = todayStr();
-  return words.find(w => w.date === today) || words[0];
-}
-
-// ─── RENDER ───────────────────────────────────────────────────────────────────
-
-function renderWordOfDay(w) {
-  const today = new Date();
-  const months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
-  document.getElementById('wodLabel').textContent = `// слово дня · ${today.getDate()} ${months[today.getMonth()]} ${today.getFullYear()}`;
-  document.getElementById('wodWord').textContent = w.word;
-  document.getElementById('wodPhonetic').textContent = w.phonetic || '';
-  document.getElementById('wodPos').textContent = w.pos || '';
-  document.getElementById('wodDef').textContent = w.def;
-  document.getElementById('wodExample').textContent = `"${w.example}"`;
-  const tagsEl = document.getElementById('wodTags');
-  tagsEl.innerHTML = (w.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('');
-  const greeting = userData.name && userData.name !== 'Гость' ? `Привет, ${userData.name}! ` : '';
-  document.getElementById('heroSub').textContent = `${greeting}Сегодня изучаем слово "${w.word}". Выбери тему или отметь прогресс.`;
-}
-
-function renderTopics(words) {
-  const counts = {};
-  words.forEach(w => { counts[w.topic] = (counts[w.topic]||0)+1; });
-  const icons = { 'Философия':'◉','Архитектура':'◫','Литература':'◌','Наука':'◪','Музыка':'◍','Искусство':'◎','Природа':'◈' };
-  const grid = document.getElementById('topicsGrid');
-  const all_count = words.length;
-  let html = `<button class="topic-card ${userData.activeTopic==='all'?'active':''}" onclick="selectTopic('all',this)">
-    <span class="topic-icon">◈</span><span class="topic-name">Все темы</span><span class="topic-count">${all_count} слов</span></button>`;
-  Object.entries(counts).forEach(([topic, cnt]) => {
-    html += `<button class="topic-card ${userData.activeTopic===topic?'active':''}" onclick="selectTopic('${topic}',this)">
-      <span class="topic-icon">${icons[topic]||'◆'}</span><span class="topic-name">${topic}</span><span class="topic-count">${cnt} слов</span></button>`;
-  });
-  grid.innerHTML = html;
-}
-
-function renderStats() {
-  const wordList = Object.values(userData.words);
-  const known = wordList.filter(w=>w.status==='known').length;
-  const topics = [...new Set(wordList.map(w=>w.topic).filter(Boolean))].length;
-  animCount('statWords', known);
-  animCount('statStreak', userData.streak?.length || 0);
-  animCount('statAccuracy', wordList.length ? Math.round((known/wordList.length)*100) : 0);
-  animCount('statTopics', topics);
-  document.getElementById('streakBadge').textContent = `◈ ${userData.streak?.length||0} дней подряд`;
-}
-
-function animCount(id, target) {
-  const el = document.getElementById(id);
-  let current = 0;
-  const step = target / 60;
-  const timer = setInterval(() => {
-    current = Math.min(current+step, target);
-    el.textContent = Math.floor(current);
-    if (current >= target) clearInterval(timer);
-  }, 16);
-}
-
-function renderCalendar() {
-  const grid = document.getElementById('calGrid');
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = today.getMonth();
-  const months_ru = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
-  document.getElementById('streakTitle').textContent = `// активность · ${months_ru[month]} ${year}`;
-
-  const firstDay = new Date(year, month, 1);
-  // Monday-based: Sunday=6, Monday=0
-  let offset = firstDay.getDay() - 1;
-  if (offset < 0) offset = 6;
-  const daysInMonth = new Date(year, month+1, 0).getDate();
-  const todayDate = today.getDate();
-
-  const streakSet = new Set(userData.streak || []);
-
-  grid.innerHTML = '';
-  for (let i = 0; i < offset; i++) {
-    const d = document.createElement('div'); d.className='cal-day'; grid.appendChild(d);
+  const stored = userData.todayQueue;
+  if (stored && stored.date === today) {
+    return words.filter(w => stored.words.includes(w.word));
   }
-  for (let day = 1; day <= daysInMonth; day++) {
-    const d = document.createElement('div');
-    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-    d.className = 'cal-day';
-    d.title = `${day} ${months_ru[month]}`;
-    if (day === todayDate) d.classList.add('today');
-    else if (day < todayDate) d.classList.add(streakSet.has(dateStr) ? 'done' : 'missed');
-    grid.appendChild(d);
-  }
+  const queue = buildQueue(words);
+  const picked = queue.slice(0, userData.prefs.wordsPerDay).map(w => w.word);
+  userData.todayQueue = { date: today, words: picked };
+  save();
+  return queue.slice(0, userData.prefs.wordsPerDay);
 }
 
-function renderProgress(words) {
-  const counts = {}, known = {};
-  words.forEach(w => {
-    counts[w.topic] = (counts[w.topic]||0)+1;
-    if (userData.words[w.word]?.status === 'known') known[w.topic] = (known[w.topic]||0)+1;
-  });
-  const pl = document.getElementById('progressList');
-  pl.innerHTML = Object.keys(counts).map(t => {
-    const pct = Math.round(((known[t]||0)/counts[t])*100);
-    return `<div class="progress-item">
-      <span class="progress-name">${t}</span>
-      <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:0%" data-width="${pct}%"></div></div>
-      <span class="progress-pct">${pct}%</span></div>`;
-  }).join('');
-  setTimeout(() => {
-    document.querySelectorAll('.progress-bar-fill').forEach(b => b.style.width = b.dataset.width);
-  }, 300);
+// ─── UTILS ────────────────────────────────────────────────────────────────────
+function todayStr() { return new Date().toISOString().slice(0,10); }
+
+function dateLabel() {
+  const d = new Date();
+  const m = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+  return `${d.getDate()} ${m[d.getMonth()]} ${d.getFullYear()}`;
 }
 
-function renderWordTable(filter) {
-  const wordList = Object.values(userData.words);
-  const filtered = filter==='all' ? wordList : wordList.filter(w=>w.status===filter);
-  const sorted = filtered.sort((a,b)=>new Date(b.addedAt)-new Date(a.addedAt));
-  document.getElementById('wordTableBody').innerHTML = sorted.map(w => `
-    <tr>
-      <td class="w-word">${w.word}</td>
-      <td class="w-pos">${w.pos||''}</td>
-      <td class="w-def">${w.def||''}</td>
-      <td class="w-date">${w.addedAt?.slice(5,10)||''}</td>
-      <td><span class="w-status ${w.status}"></span></td>
-    </tr>`).join('') || `<tr><td colspan="5" style="color:var(--grey-mid);font-family:'Courier Prime',monospace;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;padding:2rem 1rem;">Слов пока нет</td></tr>`;
-}
-
-function renderArts(words) {
-  const artGrid = document.getElementById('artGrid');
-  artGrid.innerHTML = '';
-  const shown = words.slice(0, 6);
-  shown.forEach((w, i) => {
+// ─── RENDER WORD CARDS ────────────────────────────────────────────────────────
+function renderWordCards(words) {
+  const container = document.getElementById('wordCards');
+  container.innerHTML = '';
+  words.forEach((w, i) => {
+    const st = userData.words[w.word]?.status;
     const card = document.createElement('div');
-    card.className = 'art-card';
-    const canvas = document.createElement('canvas');
-    canvas.width = 400; canvas.height = 300;
-    card.appendChild(canvas);
-    card.innerHTML += `<div class="art-caption"><div class="art-word">${w.word}</div><div class="art-word-def">${w.topic||''}</div></div>`;
-    artGrid.appendChild(card);
-    drawArt(canvas, i);
+    card.className = 'word-card';
+    card.id = 'card-' + w.word;
+    card.innerHTML = `
+      <div class="wc-left">
+        <div class="wc-date">// слово ${i+1} · ${dateLabel()}</div>
+        <div class="wc-word">${w.word}</div>
+        <div class="wc-phonetic">${w.phonetic || ''}</div>
+        <div class="wc-pos">${w.pos || ''}</div>
+        <div class="wc-tags">${(w.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+      </div>
+      <div class="wc-right">
+        <div class="wc-ru">${w.def_ru || w.def}</div>
+        <div class="wc-en">${w.def}</div>
+        <div class="wc-example">"${w.example}"</div>
+        <div class="wc-actions">
+          <button class="wc-btn primary ${st==='known'?'done-known':''}" onclick="markWord('${w.word}','known')">
+            ${st==='known' ? '✓ Знаю' : '✓ Знаю'}
+          </button>
+          <button class="wc-btn ${st==='learning'?'done-learning':''}" onclick="markWord('${w.word}','learning')">
+            ◈ Учу
+          </button>
+        </div>
+      </div>`;
+    container.appendChild(card);
   });
 }
 
-function drawArt(canvas, seed) {
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
-  ctx.fillStyle = '#0f0f0f'; ctx.fillRect(0,0,W,H);
-  const rng = mulberry32(seed * 1337 + 42);
-  const style = seed % 3;
-  if (style === 0) {
-    const cx=W*0.4+rng()*W*0.2, cy=H*0.4+rng()*H*0.2;
-    for (let a=0;a<Math.PI*2;a+=0.05) {
-      const len=80+rng()*120;
-      ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+Math.cos(a)*len,cy+Math.sin(a)*len);
-      ctx.strokeStyle=`rgba(240,237,232,${0.03+rng()*0.12})`; ctx.lineWidth=0.5+rng(); ctx.stroke();
-    }
-    ctx.beginPath(); ctx.arc(cx,cy,20+rng()*30,0,Math.PI*2);
-    ctx.strokeStyle='rgba(240,237,232,0.3)'; ctx.lineWidth=0.5; ctx.stroke();
-  } else if (style === 1) {
-    const cols=12, rows=9;
-    for (let r=0;r<rows;r++) {
-      ctx.beginPath();
-      for (let c=0;c<=cols;c++) {
-        const x=(c/cols)*W, y=(r/rows)*H+Math.sin(c*0.6+seed)*(15+rng()*20);
-        c===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
-      }
-      ctx.strokeStyle=`rgba(240,237,232,${0.05+rng()*0.2})`; ctx.lineWidth=0.5; ctx.stroke();
-    }
-  } else {
-    for (let p=0;p<200;p++) {
-      const x=rng()*W,y=rng()*H,r=0.5+rng()*2.5;
-      ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
-      ctx.fillStyle=`rgba(240,237,232,${0.05+rng()*0.35})`; ctx.fill();
-    }
-    for (let l=0;l<30;l++) {
-      const x1=rng()*W,y1=rng()*H,x2=x1+(rng()-0.5)*120,y2=y1+(rng()-0.5)*120;
-      ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2);
-      ctx.strokeStyle=`rgba(240,237,232,${0.04+rng()*0.1})`; ctx.lineWidth=0.4; ctx.stroke();
-    }
-  }
-}
-
-function mulberry32(a) {
-  return function(){
-    a|=0; a=a+0x6D2B79F5|0;
-    var t=Math.imul(a^a>>>15,1|a);
-    t=t+Math.imul(t^t>>>7,61|t)^t;
-    return ((t^t>>>14)>>>0)/4294967296;
-  };
-}
-
-// ─── ACTIONS ──────────────────────────────────────────────────────────────────
-async function markWord(status) {
-  const today = allWords.find(w => w.date === todayStr()) || allWords[0];
-  if (!today) return;
-  userData.words[today.word] = {
-    word: today.word, pos: today.pos, def: today.def,
-    topic: today.topic, status, addedAt: todayStr()
-  };
-  // Add today to streak
+function markWord(word, status) {
+  const w = allWords.find(x => x.word === word);
+  if (!w) return;
+  userData.words[word] = { word, pos: w.pos, def_ru: w.def_ru, def: w.def, topic: w.topic, status, addedAt: todayStr() };
   const td = todayStr();
   if (!userData.streak) userData.streak = [];
   if (!userData.streak.includes(td)) userData.streak.push(td);
-
+  save();
+  renderWordCards(todayWords);
   renderStats();
   renderCalendar();
   renderWordTable(currentFilter);
   renderProgress(allWords);
   showToast(status === 'known' ? '✓ Отмечено как знакомое' : '◈ Добавлено в изучение');
-  saveLocal();
 }
 
-function selectTopic(topic, btn) {
-  userData.activeTopic = topic;
-  document.querySelectorAll('.topic-card').forEach(c=>c.classList.remove('active'));
-  btn.classList.add('active');
+// ─── RENDER STATS ─────────────────────────────────────────────────────────────
+function renderStats() {
+  const list  = Object.values(userData.words);
+  const known = list.filter(w => w.status === 'known').length;
+  animCount('statWords', known);
+  animCount('statStreak', userData.streak?.length || 0);
+  animCount('statAccuracy', list.length ? Math.round((known/list.length)*100) : 0);
+  animCount('statTotal', list.length);
+  document.getElementById('streakBadge').textContent = `◈ ${userData.streak?.length||0} дней подряд`;
 }
 
-function filterWords(filter, btn) {
+function animCount(id, target) {
+  const el = document.getElementById(id); let cur = 0;
+  const step = target / 40;
+  const t = setInterval(() => { cur = Math.min(cur+step, target); el.textContent = Math.floor(cur); if(cur>=target)clearInterval(t); }, 16);
+}
+
+// ─── RENDER CALENDAR ──────────────────────────────────────────────────────────
+function renderCalendar() {
+  const grid = document.getElementById('calGrid');
+  const today = new Date();
+  const year = today.getFullYear(), month = today.getMonth();
+  const mru = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
+  document.getElementById('streakTitle').textContent = `// активность · ${mru[month]} ${year}`;
+  let offset = new Date(year, month, 1).getDay() - 1;
+  if (offset < 0) offset = 6;
+  const days = new Date(year, month+1, 0).getDate();
+  const streakSet = new Set(userData.streak || []);
+  grid.innerHTML = '';
+  for (let i=0;i<offset;i++) { const d=document.createElement('div'); d.className='cal-day'; grid.appendChild(d); }
+  for (let day=1;day<=days;day++) {
+    const d = document.createElement('div');
+    const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    d.className = 'cal-day';
+    if (day===today.getDate()) d.classList.add('today');
+    else if (day<today.getDate()) d.classList.add(streakSet.has(ds)?'done':'missed');
+    grid.appendChild(d);
+  }
+}
+
+// ─── RENDER PROGRESS ──────────────────────────────────────────────────────────
+function renderProgress(words) {
+  const counts={}, known={};
+  words.forEach(w => {
+    counts[w.topic]=(counts[w.topic]||0)+1;
+    if(userData.words[w.word]?.status==='known') known[w.topic]=(known[w.topic]||0)+1;
+  });
+  document.getElementById('progressList').innerHTML = Object.keys(counts).map(t => {
+    const pct=Math.round(((known[t]||0)/counts[t])*100);
+    return `<div class="progress-item">
+      <span class="progress-name">${t}</span>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:0%" data-w="${pct}%"></div></div>
+      <span class="progress-pct">${pct}%</span></div>`;
+  }).join('');
+  setTimeout(()=>{ document.querySelectorAll('.progress-bar-fill').forEach(b=>b.style.width=b.dataset.w); },300);
+}
+
+// ─── RENDER WORD TABLE ────────────────────────────────────────────────────────
+function renderWordTable(filter) {
   currentFilter = filter;
+  const list = Object.values(userData.words);
+  const filtered = filter==='all' ? list : list.filter(w=>w.status===filter);
+  document.getElementById('wordTableBody').innerHTML = filtered.sort((a,b)=>new Date(b.addedAt)-new Date(a.addedAt)).map(w=>`
+    <tr>
+      <td class="w-word">${w.word}</td>
+      <td class="w-pos">${w.pos||''}</td>
+      <td class="w-def">${w.def_ru||w.def||''}</td>
+      <td><span class="w-status ${w.status}"></span></td>
+    </tr>`).join('') || `<tr><td colspan="4" style="color:var(--grey-mid);font-family:'Courier Prime',monospace;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;padding:2rem 1rem;">Слов пока нет</td></tr>`;
+}
+
+function filterWords(f, btn) {
   document.querySelectorAll('.ctrl-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  renderWordTable(filter);
+  renderWordTable(f);
 }
 
-// ─── INIT ─────────────────────────────────────────────────────────────────────
+// ─── LOAD WORDS ───────────────────────────────────────────────────────────────
+async function loadWords() {
+  try {
+    const res = await fetch(WORDS_URL);
+    if (res.ok) return res.json();
+  } catch(e) {}
+  return FALLBACK_WORDS;
+}
+
+const FALLBACK_WORDS = [
+  { word:'ephemeral',phonetic:'/ɪˈfem.ər.əl/',pos:'adjective',def:'Lasting for a very short time.',def_ru:'Мимолётный, недолговечный.',example:'The ephemeral beauty of cherry blossoms.',topic:'Философия',tags:['C1','Философия'] },
+  { word:'resilient',phonetic:'/rɪˈzɪl.i.ənt/',pos:'adjective',def:'Able to recover quickly from difficult conditions.',def_ru:'Устойчивый, жизнестойкий.',example:'Children are remarkably resilient.',topic:'Психология',tags:['B2','Психология'] },
+  { word:'empathy',phonetic:'/ˈem.pə.θi/',pos:'noun',def:'The ability to understand the feelings of another.',def_ru:'Эмпатия — способность понимать чувства других.',example:'Good leaders show empathy.',topic:'Психология',tags:['B1','Психология'] },
+  { word:'grateful',phonetic:'/ˈɡreɪt.fəl/',pos:'adjective',def:'Feeling an appreciation of kindness.',def_ru:'Благодарный.',example:'I am so grateful for your help.',topic:'Повседневная речь',tags:['A2','Повседневная речь'] },
+  { word:'pragmatic',phonetic:'/præɡˈmæt.ɪk/',pos:'adjective',def:'Dealing with things sensibly and realistically.',def_ru:'Прагматичный, практичный.',example:'We need a pragmatic approach.',topic:'Бизнес',tags:['B1','Бизнес'] },
+];
+
+// ─── MAIN RENDER ──────────────────────────────────────────────────────────────
 async function loadAndRender() {
-  showScreen('loading');
   allWords = await loadWords();
-  const today = getTodayWord(allWords);
-  renderWordOfDay(today);
-  renderTopics(allWords);
+  todayWords = getTodayWords(allWords);
+
+  const greeting = userData.name && userData.name !== 'Гость' ? `Привет, ${userData.name}!` : 'Привет!';
+  document.getElementById('heroSub').textContent = `${greeting} Сегодня для тебя ${todayWords.length} ${wordForm(todayWords.length)}.`;
+
+  renderWordCards(todayWords);
   renderStats();
   renderCalendar();
   renderProgress(allWords);
   renderWordTable('all');
-  renderArts(allWords);
-  showScreen('main');
+
+  document.getElementById('navUser').style.display = 'flex';
+  document.getElementById('navUsername').textContent = userData.name;
+
+  showScreen('screenMain');
 }
 
+function wordForm(n) {
+  if (n === 1) return 'новое слово';
+  if (n >= 2 && n <= 4) return 'новых слова';
+  return 'новых слов';
+}
+
+// ─── RESET ────────────────────────────────────────────────────────────────────
+function resetAll() {
+  if (!confirm('Сбросить весь прогресс?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  userData = { name:'', prefs:{ topics:['all'], level:'intermediate', wordsPerDay:3 }, words:{}, streak:[] };
+  document.getElementById('navUser').style.display = 'none';
+  document.getElementById('nameInput').value = '';
+  showScreen('screenLogin');
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
 async function init() {
-  const saved = loadLocal();
-  if (!saved || !saved.name) {
-    showScreen('login');
-    return;
-  }
-  userData = { words:{}, streak:[], activeTopic:'all', ...saved };
-  renderNavUser(userData.name);
+  const saved = load();
+  if (!saved || !saved.name) { showScreen('screenLogin'); return; }
+  userData = { prefs:{ topics:['all'], level:'intermediate', wordsPerDay:3 }, words:{}, streak:[], ...saved };
+  showScreen('screenLoading');
   await loadAndRender();
 }
 
