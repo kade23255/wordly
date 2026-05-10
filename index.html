@@ -280,6 +280,15 @@ body {
 }
 .wg-btn:hover { background: var(--primary-dark); }
 
+/* ── PHRASE BLOCK (English examples) ── */
+.phrase-block { margin: 18px 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.ph-hd { background: var(--tag-bg); padding: 9px 16px; font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.ph-row { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--border); }
+.ph-en { padding: 10px 16px; font-size: 14px; color: var(--text); border-right: 1px solid var(--border); }
+.ph-ru { padding: 10px 16px; font-size: 13px; color: var(--text-muted); }
+.ph-row:nth-child(even) .ph-en, .ph-row:nth-child(even) .ph-ru { background: #fafbfd; }
+.ph-note { padding: 10px 16px; font-size: 12px; color: var(--primary); background: var(--note-bg); border-top: 1px solid var(--border); font-style: italic; }
+
 /* ── RESPONSIVE ── */
 @media (max-width: 768px) {
   .sidebar { display: none; }
@@ -1307,29 +1316,29 @@ function flatSections() {
 let currentTab = 'python';
 let currentSectionId = null;
 let openChapters = new Set(['ch1']);
+let currentEnSectionId = null;
+let openEnChapters = new Set(['ench1']);
 
 // ─── SIDEBAR ─────────────────────────────────────────────────────────────────
-function buildSidebar() {
+function buildCourseSidebar(course, openSet, toggleFn, currentId, navFn) {
   const list = document.getElementById('chapterList');
   list.innerHTML = '';
-  COURSE.forEach(ch => {
+  course.forEach(ch => {
     const item = document.createElement('div');
-    item.className = 'chapter-item' + (openChapters.has(ch.id) ? ' open' : '');
-    item.id = 'chitem-' + ch.id;
+    item.className = 'chapter-item' + (openSet.has(ch.id) ? ' open' : '');
 
     const hd = document.createElement('div');
     hd.className = 'chapter-hd';
     hd.innerHTML = `<span class="ch-num">${ch.num}</span><span>${ch.title}</span><span class="ch-arr">▶</span>`;
-    hd.onclick = () => toggleChapter(ch.id);
+    hd.onclick = () => toggleFn(ch.id);
 
     const secList = document.createElement('div');
     secList.className = 'sec-list';
     ch.sections.forEach(sec => {
       const link = document.createElement('div');
-      link.className = 'sec-link' + (sec.id === currentSectionId ? ' active' : '');
-      link.id = 'slink-' + sec.id;
+      link.className = 'sec-link' + (sec.id === currentId ? ' active' : '');
       link.textContent = sec.title;
-      link.onclick = () => navigate(ch.id, sec.id);
+      link.onclick = () => navFn(ch.id, sec.id);
       secList.appendChild(link);
     });
 
@@ -1339,13 +1348,20 @@ function buildSidebar() {
   });
 }
 
+function buildSidebar() {
+  buildCourseSidebar(COURSE, openChapters, toggleChapter, currentSectionId, navigate);
+}
+function buildEnSidebar() {
+  buildCourseSidebar(ENGLISH_COURSE, openEnChapters, toggleEnChapter, currentEnSectionId, navigateEn);
+}
+
 function toggleChapter(chId) {
-  if (openChapters.has(chId)) {
-    openChapters.delete(chId);
-  } else {
-    openChapters.add(chId);
-  }
+  openChapters.has(chId) ? openChapters.delete(chId) : openChapters.add(chId);
   buildSidebar();
+}
+function toggleEnChapter(chId) {
+  openEnChapters.has(chId) ? openEnChapters.delete(chId) : openEnChapters.add(chId);
+  buildEnSidebar();
 }
 
 // ─── TAB SWITCH ───────────────────────────────────────────────────────────────
@@ -1353,32 +1369,32 @@ function switchTab(tab) {
   currentTab = tab;
   document.getElementById('tabPython').classList.toggle('active', tab === 'python');
   document.getElementById('tabEnglish').classList.toggle('active', tab === 'english');
+  resetContentArea();
 
   if (tab === 'english') {
-    document.getElementById('chapterList').style.display = 'none';
-    renderEnglish();
+    buildEnSidebar();
+    if (currentEnSectionId) {
+      const flat = flatEnSections();
+      const found = flat.find(x => x.sec.id === currentEnSectionId);
+      if (found) renderEnSection(found.ch, found.sec); else renderEnglishHome();
+    } else { renderEnglishHome(); }
   } else {
-    document.getElementById('chapterList').style.display = '';
-    resetContentArea();
+    buildSidebar();
     if (currentSectionId) {
       const flat = flatSections();
       const found = flat.find(x => x.sec.id === currentSectionId);
-      if (found) renderSection(found.ch, found.sec);
-      else renderHome();
-    } else {
-      renderHome();
-    }
+      if (found) renderSection(found.ch, found.sec); else renderHome();
+    } else { renderHome(); }
   }
 }
 
-// ─── NAVIGATION ───────────────────────────────────────────────────────────────
+// ─── PYTHON NAVIGATION ────────────────────────────────────────────────────────
 function navigate(chId, secId) {
   currentSectionId = secId;
   openChapters.add(chId);
   buildSidebar();
   const ch = COURSE.find(c => c.id === chId);
-  const sec = ch.sections.find(s => s.id === secId);
-  renderSection(ch, sec);
+  renderSection(ch, ch.sections.find(s => s.id === secId));
   document.querySelector('.main').scrollTo(0, 0);
 }
 
@@ -1386,6 +1402,22 @@ function goHome() {
   currentSectionId = null;
   buildSidebar();
   renderHome();
+}
+
+// ─── ENGLISH NAVIGATION ───────────────────────────────────────────────────────
+function navigateEn(chId, secId) {
+  currentEnSectionId = secId;
+  openEnChapters.add(chId);
+  buildEnSidebar();
+  const ch = ENGLISH_COURSE.find(c => c.id === chId);
+  renderEnSection(ch, ch.sections.find(s => s.id === secId));
+  document.querySelector('.main').scrollTo(0, 0);
+}
+
+function goEnHome() {
+  currentEnSectionId = null;
+  buildEnSidebar();
+  renderEnglishHome();
 }
 
 // ─── RENDER HOME ──────────────────────────────────────────────────────────────
@@ -1456,6 +1488,522 @@ function renderSection(ch, sec) {
 
   document.querySelectorAll('.code-block pre code').forEach(el => hljs.highlightElement(el));
 }
+
+// ─── ENGLISH COURSE DATA ─────────────────────────────────────────────────────
+const ENGLISH_COURSE = [
+  {
+    id: 'ench1', num: '01', title: 'Основы языка',
+    sections: [
+      {
+        id: 'en-s1-1', title: 'Структура предложения (SVO)',
+        html: `<p>Английское предложение строится по строгому порядку: <strong>Subject (подлежащее) + Verb (глагол) + Object (дополнение)</strong>. В отличие от русского, порядок слов фиксированный — его нельзя менять произвольно.</p>
+<h2>Три типа предложений</h2>
+<table>
+  <tr><th>Тип</th><th>Структура</th><th>Пример</th></tr>
+  <tr><td>Утвердительное</td><td>S + V + O</td><td><em>I write Python code.</em></td></tr>
+  <tr><td>Отрицательное</td><td>S + don't/doesn't + V</td><td><em>She doesn't use Java.</em></td></tr>
+  <tr><td>Вопросительное</td><td>Do/Does + S + V?</td><td><em>Do you know Git?</em></td></tr>
+</table>
+<div class="note"><div class="note-lbl">Ключевое отличие от русского</div><p>«Я код пишу» и «Код пишу я» — по-русски обе фразы корректны. В английском только один вариант: <em>I write code.</em> Перестановка слов меняет смысл или делает предложение неграмматичным.</p></div>
+<h2>Вопросительные слова (Wh-questions)</h2>
+<table>
+  <tr><th>Слово</th><th>Значение</th><th>Пример</th></tr>
+  <tr><td><code>What</code></td><td>Что / Какой</td><td><em>What does this function do?</em></td></tr>
+  <tr><td><code>Where</code></td><td>Где / Куда</td><td><em>Where is the bug?</em></td></tr>
+  <tr><td><code>When</code></td><td>Когда</td><td><em>When did you deploy it?</em></td></tr>
+  <tr><td><code>Who</code></td><td>Кто</td><td><em>Who reviewed the code?</em></td></tr>
+  <tr><td><code>Why</code></td><td>Почему</td><td><em>Why is this test failing?</em></td></tr>
+  <tr><td><code>How</code></td><td>Как</td><td><em>How does it work?</em></td></tr>
+</table>`,
+        phrases: [
+          { label: 'Утвердительные предложения (+)', pairs: [
+            { en: 'I write Python code every day.', ru: 'Я пишу код на Python каждый день.' },
+            { en: 'She tests the application before release.', ru: 'Она тестирует приложение перед релизом.' },
+            { en: 'The server processes requests in parallel.', ru: 'Сервер обрабатывает запросы параллельно.' },
+          ]},
+          { label: 'Отрицательные предложения (−)', pairs: [
+            { en: "I don't understand this error message.", ru: 'Я не понимаю это сообщение об ошибке.' },
+            { en: "She doesn't work on the backend.", ru: 'Она не работает на бэкенде.' },
+            { en: "We didn't finish the sprint on time.", ru: 'Мы не завершили спринт вовремя.' },
+          ]},
+          { label: 'Вопросительные предложения (?)', pairs: [
+            { en: 'Do you use version control?', ru: 'Ты используешь систему контроля версий?' },
+            { en: 'Does this function return a value?', ru: 'Эта функция возвращает значение?' },
+            { en: 'What does this variable store?', ru: 'Что хранит эта переменная?' },
+            { en: 'Why did the build fail?', ru: 'Почему сборка упала?' },
+          ]},
+        ]
+      },
+      {
+        id: 'en-s1-2', title: 'Артикли: a, an, the',
+        html: `<p>Артикли — одна из самых сложных тем для русскоязычных, потому что в русском их нет. Артикль ставится перед существительным и указывает, насколько конкретен объект.</p>
+<h2>a / an — неопределённый артикль</h2>
+<p>Используется, когда объект упоминается <strong>впервые</strong> или не конкретизирован. Только перед исчисляемым существительным в единственном числе.</p>
+<ul>
+  <li><strong>a</strong> — перед словом, начинающимся с согласного звука: <em>a bug, a function, a user</em></li>
+  <li><strong>an</strong> — перед словом, начинающимся с гласного звука: <em>an error, an API, an hour</em></li>
+</ul>
+<div class="note"><div class="note-lbl">Важно</div><p><em>an hour</em>, но <em>a university</em> — артикль зависит от <strong>звука</strong>, а не буквы. «h» в <em>hour</em> не произносится, «u» в <em>university</em> звучит как «ju» (согласный звук).</p></div>
+<h2>the — определённый артикль</h2>
+<p>Используется когда объект <strong>уже известен</strong> обоим собеседникам, упомянут ранее, или является единственным в своём роде.</p>
+<h2>Нулевой артикль (без артикля)</h2>
+<ul>
+  <li>Имена собственные: <em>Python, GitHub, London, Александр</em></li>
+  <li>Неисчисляемые в общем смысле: <em>information, data, code, software</em></li>
+  <li>Множественное число в общем смысле: <em>Developers write code.</em></li>
+</ul>`,
+        phrases: [
+          { label: 'Примеры с артиклями', pairs: [
+            { en: 'I found a bug. The bug was in the login function.', ru: 'Я нашёл баг. Этот баг был в функции входа. (a — первое упоминание, the — уже известный)' },
+            { en: 'She wrote an algorithm to solve the problem.', ru: 'Она написала алгоритм для решения проблемы.' },
+            { en: 'The database crashed last night.', ru: 'База данных упала прошлой ночью. (конкретная, известная)' },
+            { en: 'Information flows through the network.', ru: 'Информация течёт через сеть. (без артикля — общий смысл)' },
+            { en: 'Python is a high-level language.', ru: 'Python — высокоуровневый язык. (Python — без артикля, a language — первое упоминание)' },
+          ], note: 'Правило для запоминания: a/an = «какой-то один», the = «тот самый», без артикля = «в целом»' },
+        ]
+      }
+    ]
+  },
+  {
+    id: 'ench2', num: '02', title: 'Части речи',
+    sections: [
+      {
+        id: 'en-s2-1', title: 'Существительные и множественное число',
+        html: `<p>Существительное (noun) — имя предмета, понятия или человека. В английском важно различать исчисляемые и неисчисляемые существительные.</p>
+<h2>Правила множественного числа</h2>
+<table>
+  <tr><th>Правило</th><th>Пример</th></tr>
+  <tr><td>Большинство: + <code>s</code></td><td>bug → bugs, file → files, method → methods</td></tr>
+  <tr><td>ch, sh, ss, x, o: + <code>es</code></td><td>branch → branches, class → classes</td></tr>
+  <tr><td>согл. + y → <code>ies</code></td><td>library → libraries, query → queries</td></tr>
+  <tr><td>f/fe → <code>ves</code></td><td>half → halves, life → lives</td></tr>
+  <tr><td>Исключения</td><td>person → people, child → children, datum → data, criterion → criteria</td></tr>
+</table>
+<h2>Неисчисляемые существительные (всегда ед. число)</h2>
+<p>Следующие слова <strong>не имеют множественного числа</strong> и требуют глагола в единственном числе:</p>
+<ul>
+  <li><em>information</em> — информация (не informations!)</li>
+  <li><em>software, hardware, firmware</em></li>
+  <li><em>feedback, advice, knowledge, progress</em></li>
+  <li><em>data</em> — в разговорном IT-английском часто используется как неисчисляемое</li>
+</ul>
+<h2>Притяжательный падеж ('s)</h2>
+<p><code>существительное + 's + описываемое слово</code> = принадлежность</p>`,
+        phrases: [
+          { label: 'Множественное число и притяжательный падеж', pairs: [
+            { en: "The developer's code is clean and well-documented.", ru: 'Код разработчика чистый и хорошо задокументированный.' },
+            { en: 'We need to fix three bugs before the release.', ru: 'Нам нужно исправить три бага до релиза.' },
+            { en: 'The library has multiple branches for different features.', ru: 'В библиотеке несколько веток для разных функций.' },
+            { en: 'The feedback from users is very useful.', ru: 'Обратная связь от пользователей очень полезна. (feedback — без s)' },
+            { en: 'We need more information about this error.', ru: 'Нам нужно больше информации об этой ошибке. (information — без s)' },
+          ]},
+        ]
+      },
+      {
+        id: 'en-s2-2', title: 'Местоимения',
+        html: `<p>Местоимение заменяет существительное, чтобы избежать повторения. В английском форма местоимения зависит от его роли в предложении.</p>
+<h2>Таблица местоимений</h2>
+<table>
+  <tr><th>Лицо</th><th>Подлежащее</th><th>Дополнение</th><th>Притяж. прил.</th><th>Притяж. мест.</th><th>Возвратное</th></tr>
+  <tr><td>1 ед.</td><td>I</td><td>me</td><td>my</td><td>mine</td><td>myself</td></tr>
+  <tr><td>2</td><td>you</td><td>you</td><td>your</td><td>yours</td><td>yourself</td></tr>
+  <tr><td>3 ед. м.</td><td>he</td><td>him</td><td>his</td><td>his</td><td>himself</td></tr>
+  <tr><td>3 ед. ж.</td><td>she</td><td>her</td><td>her</td><td>hers</td><td>herself</td></tr>
+  <tr><td>3 ед. ср.</td><td>it</td><td>it</td><td>its</td><td>its</td><td>itself</td></tr>
+  <tr><td>1 мн.</td><td>we</td><td>us</td><td>our</td><td>ours</td><td>ourselves</td></tr>
+  <tr><td>3 мн.</td><td>they</td><td>them</td><td>their</td><td>theirs</td><td>themselves</td></tr>
+</table>
+<div class="note"><div class="note-lbl">Частая ошибка</div><p><code>its</code> (притяжательное) — без апострофа. <code>it's</code> (с апострофом) = <em>it is</em>. Смешивать нельзя: <em>The app crashed. Its logs showed an error.</em></p></div>`,
+        phrases: [
+          { label: 'Использование местоимений', pairs: [
+            { en: 'I wrote the function. She reviewed it and gave me feedback.', ru: 'Я написал функцию. Она проверила её и дала мне обратную связь.' },
+            { en: 'The server lost its connection. We restarted it ourselves.', ru: 'Сервер потерял соединение. Мы перезапустили его сами.' },
+            { en: 'Their code is faster than ours.', ru: 'Их код быстрее нашего.' },
+            { en: "Is this bug mine or yours?", ru: 'Этот баг мой или твой?' },
+          ]},
+        ]
+      },
+      {
+        id: 'en-s2-3', title: 'Прилагательные и степени сравнения',
+        html: `<p>Прилагательное (adjective) описывает существительное и стоит <strong>перед</strong> ним (в отличие от русского). Несколько прилагательных следуют строгому порядку: количество → оценка → размер → возраст → форма → цвет → происхождение.</p>
+<h2>Степени сравнения</h2>
+<table>
+  <tr><th>Исходная форма</th><th>Сравнительная (-er / more)</th><th>Превосходная (-est / most)</th></tr>
+  <tr><td>fast</td><td>faster</td><td>the fastest</td></tr>
+  <tr><td>simple</td><td>simpler</td><td>the simplest</td></tr>
+  <tr><td>efficient</td><td>more efficient</td><td>the most efficient</td></tr>
+  <tr><td>good</td><td>better</td><td>the best</td></tr>
+  <tr><td>bad</td><td>worse</td><td>the worst</td></tr>
+  <tr><td>many / much</td><td>more</td><td>the most</td></tr>
+  <tr><td>little</td><td>less</td><td>the least</td></tr>
+</table>
+<p>Правило: короткие слова (1 слог) → <code>-er/-est</code>. Длинные слова (2+ слога) → <code>more/most</code>.</p>`,
+        phrases: [
+          { label: 'Степени сравнения', pairs: [
+            { en: 'This solution is faster than the previous one.', ru: 'Это решение быстрее предыдущего.' },
+            { en: 'Python is more readable than C++.', ru: 'Python более читаемый, чем C++.' },
+            { en: 'This is the worst bug I have ever seen.', ru: 'Это худший баг, который я когда-либо видел.' },
+            { en: 'The new API is better documented than the old one.', ru: 'Новый API задокументирован лучше старого.' },
+            { en: 'We need a more efficient algorithm for large datasets.', ru: 'Нам нужен более эффективный алгоритм для больших наборов данных.' },
+          ]},
+        ]
+      },
+      {
+        id: 'en-s2-4', title: 'Предлоги места и времени',
+        html: `<p>Предлоги (prepositions) показывают связь между словами. Для русскоязычных предлоги — частая зона ошибок, потому что они не совпадают с русскими.</p>
+<h2>Предлоги времени</h2>
+<table>
+  <tr><th>Предлог</th><th>Использование</th><th>Пример</th></tr>
+  <tr><td><code>at</code></td><td>Точное время, праздники</td><td><em>at 9 AM, at noon, at Christmas</em></td></tr>
+  <tr><td><code>on</code></td><td>День, дата</td><td><em>on Monday, on May 10th</em></td></tr>
+  <tr><td><code>in</code></td><td>Месяц, год, период дня</td><td><em>in May, in 2026, in the morning</em></td></tr>
+</table>
+<h2>Предлоги места</h2>
+<table>
+  <tr><th>Предлог</th><th>Использование</th><th>Пример</th></tr>
+  <tr><td><code>at</code></td><td>Точка, место в целом</td><td><em>at the office, at the meeting</em></td></tr>
+  <tr><td><code>on</code></td><td>Поверхность</td><td><em>on the screen, on the server</em></td></tr>
+  <tr><td><code>in</code></td><td>Внутри замкнутого пространства</td><td><em>in the database, in the file</em></td></tr>
+  <tr><td><code>between</code></td><td>Между двумя</td><td><em>between the client and the server</em></td></tr>
+  <tr><td><code>through</code></td><td>Через, сквозь</td><td><em>data flows through the pipeline</em></td></tr>
+</table>`,
+        phrases: [
+          { label: 'Предлоги в IT-контексте', pairs: [
+            { en: 'The meeting starts at 10 AM on Monday.', ru: 'Встреча начинается в 10 утра в понедельник.' },
+            { en: 'The data is stored in the database.', ru: 'Данные хранятся в базе данных.' },
+            { en: 'The error is on line 42 of the file.', ru: 'Ошибка на 42-й строке файла.' },
+            { en: 'We deployed the app in January.', ru: 'Мы задеплоили приложение в январе.' },
+            { en: 'The request travels through the middleware.', ru: 'Запрос проходит через middleware.' },
+          ]},
+        ]
+      }
+    ]
+  },
+  {
+    id: 'ench3', num: '03', title: 'Времена глагола',
+    sections: [
+      {
+        id: 'en-s3-1', title: 'Present Simple — настоящее простое',
+        html: `<p>Present Simple описывает <strong>регулярные действия, привычки, факты и расписание</strong>. Это самое частое время в IT-коммуникации.</p>
+<h2>Образование</h2>
+<table>
+  <tr><th></th><th>Утверждение</th><th>Отрицание</th><th>Вопрос</th></tr>
+  <tr><td>I / You / We / They</td><td>work</td><td>don't work</td><td>Do … work?</td></tr>
+  <tr><td>He / She / It</td><td>work<strong>s</strong></td><td>doesn't work</td><td>Does … work?</td></tr>
+</table>
+<div class="note"><div class="note-lbl">Третье лицо ед. числа</div><p>К глаголу добавляется <strong>-s</strong>: <em>he write<strong>s</strong>, she test<strong>s</strong></em>. Исключения: <em>go → goes, do → does, have → has</em>. Только в утверждении — в отрицании и вопросе уже есть <em>does</em>.</p></div>
+<h2>Сигнальные слова</h2>
+<p><em>always, usually, often, sometimes, rarely, never, every day/week, on Mondays</em></p>`,
+        phrases: [
+          { label: 'Present Simple — примеры', pairs: [
+            { en: 'I work remotely five days a week.', ru: 'Я работаю удалённо пять дней в неделю.' },
+            { en: 'The server runs a health check every minute.', ru: 'Сервер запускает проверку состояния каждую минуту.' },
+            { en: 'She usually reviews pull requests in the morning.', ru: 'Она обычно проверяет пул-реквесты утром.' },
+            { en: "He doesn't push to main without a review.", ru: 'Он не пушит в main без код-ревью.' },
+            { en: 'Do you use Docker in this project?', ru: 'Ты используешь Docker в этом проекте?' },
+            { en: 'Does the API return a JSON response?', ru: 'API возвращает ответ в формате JSON?' },
+          ]},
+        ]
+      },
+      {
+        id: 'en-s3-2', title: 'Present Continuous — настоящее длительное',
+        html: `<p>Present Continuous описывает <strong>действие, происходящее прямо сейчас</strong>, временные ситуации, а также заранее запланированные действия в ближайшем будущем.</p>
+<h2>Образование: am / is / are + V-ing</h2>
+<table>
+  <tr><th></th><th>Утверждение</th><th>Отрицание</th><th>Вопрос</th></tr>
+  <tr><td>I</td><td>am working</td><td>am not working</td><td>Am I working?</td></tr>
+  <tr><td>He / She / It</td><td>is working</td><td>isn't working</td><td>Is he working?</td></tr>
+  <tr><td>You / We / They</td><td>are working</td><td>aren't working</td><td>Are they working?</td></tr>
+</table>
+<h2>Сигнальные слова</h2>
+<p><em>now, right now, at the moment, currently, today, this week, look! listen!</em></p>
+<h2>Present Simple vs. Present Continuous</h2>
+<table>
+  <tr><th>Present Simple</th><th>Present Continuous</th></tr>
+  <tr><td><em>I write Python.</em> (всегда, профессия)</td><td><em>I am writing a new module.</em> (сейчас, в процессе)</td></tr>
+  <tr><td><em>She works at Google.</em> (постоянная работа)</td><td><em>She is working on a bug fix.</em> (сейчас занята)</td></tr>
+</table>`,
+        phrases: [
+          { label: 'Present Continuous — примеры', pairs: [
+            { en: "I'm currently debugging the authentication module.", ru: 'Я сейчас отлаживаю модуль аутентификации.' },
+            { en: "We're deploying the new version right now.", ru: 'Мы прямо сейчас деплоим новую версию.' },
+            { en: 'The tests are running — please wait.', ru: 'Тесты выполняются — пожалуйста, подождите.' },
+            { en: "She isn't attending the meeting today — she's working from home.", ru: 'Она не будет на встрече сегодня — работает из дома.' },
+            { en: "We're migrating to the new database next week.", ru: 'На следующей неделе мы переходим на новую базу данных. (план)' },
+          ]},
+        ]
+      },
+      {
+        id: 'en-s3-3', title: 'Past Simple — прошедшее простое',
+        html: `<p>Past Simple описывает <strong>завершённые действия в прошлом</strong> с конкретным указанием времени или без него.</p>
+<h2>Образование</h2>
+<p><strong>Правильные глаголы</strong>: добавляется <code>-ed</code>: <em>work → worked, fix → fixed, deploy → deployed</em></p>
+<p><strong>Неправильные глаголы</strong>: особая форма (V2):</p>
+<table>
+  <tr><th>Инфинитив</th><th>Past Simple</th><th>Перевод</th></tr>
+  <tr><td>write</td><td>wrote</td><td>писать</td></tr>
+  <tr><td>build</td><td>built</td><td>строить/собирать</td></tr>
+  <tr><td>run</td><td>ran</td><td>запускать</td></tr>
+  <tr><td>find</td><td>found</td><td>находить</td></tr>
+  <tr><td>break</td><td>broke</td><td>ломать</td></tr>
+  <tr><td>send</td><td>sent</td><td>отправлять</td></tr>
+  <tr><td>read</td><td>read</td><td>читать (произносится /red/)</td></tr>
+  <tr><td>make</td><td>made</td><td>делать</td></tr>
+  <tr><td>have</td><td>had</td><td>иметь</td></tr>
+  <tr><td>go</td><td>went</td><td>идти / переходить</td></tr>
+</table>
+<p><strong>Отрицание</strong>: <code>didn't + инфинитив</code> (для всех лиц и глаголов)<br>
+<strong>Вопрос</strong>: <code>Did + subject + инфинитив?</code></p>
+<h2>Сигнальные слова</h2>
+<p><em>yesterday, last week/month/year, ago, in 2020, at 3 PM, when I was…</em></p>`,
+        phrases: [
+          { label: 'Past Simple — примеры', pairs: [
+            { en: 'I fixed the bug yesterday afternoon.', ru: 'Я исправил баг вчера во второй половине дня.' },
+            { en: 'We built the entire feature in two sprints.', ru: 'Мы создали всю функцию за два спринта.' },
+            { en: "She didn't push the changes to the repository.", ru: 'Она не запушила изменения в репозиторий.' },
+            { en: 'Did you run the tests before merging?', ru: 'Ты запустил тесты перед мёрджем?' },
+            { en: 'The server went down at 2 AM last Friday.', ru: 'Сервер упал в 2 часа ночи в прошлую пятницу.' },
+          ]},
+        ]
+      },
+      {
+        id: 'en-s3-4', title: 'Present Perfect — настоящее совершённое',
+        html: `<p>Present Perfect связывает <strong>прошлое с настоящим</strong>: действие произошло в прошлом, но его результат важен сейчас. Точное время не указывается или не важно.</p>
+<h2>Образование: have / has + V3 (причастие прошедшего времени)</h2>
+<table>
+  <tr><th></th><th>Утверждение</th><th>Отрицание</th><th>Вопрос</th></tr>
+  <tr><td>I / You / We / They</td><td>have worked</td><td>haven't worked</td><td>Have you worked?</td></tr>
+  <tr><td>He / She / It</td><td>has worked</td><td>hasn't worked</td><td>Has she worked?</td></tr>
+</table>
+<h2>Сигнальные слова</h2>
+<p><em>already, yet, just, ever, never, recently, lately, since, for, so far, up to now</em></p>
+<h2>Present Perfect vs. Past Simple</h2>
+<table>
+  <tr><th>Present Perfect</th><th>Past Simple</th></tr>
+  <tr><td><em>I have deployed the update.</em> (только что, результат важен)</td><td><em>I deployed it yesterday at 5 PM.</em> (конкретное время)</td></tr>
+  <tr><td><em>Have you ever used Kubernetes?</em> (жизненный опыт)</td><td><em>Did you use Kubernetes at your last job?</em> (конкретный период)</td></tr>
+</table>`,
+        phrases: [
+          { label: 'Present Perfect — примеры', pairs: [
+            { en: "I've already fixed the bug — you can test it now.", ru: 'Я уже исправил баг — можешь тестировать.' },
+            { en: "We haven't merged the pull request yet.", ru: 'Мы ещё не смёрджили пул-реквест.' },
+            { en: 'She has just pushed the latest changes.', ru: 'Она только что запушила последние изменения.' },
+            { en: 'Have you ever worked with microservices?', ru: 'Ты когда-нибудь работал с микросервисами?' },
+            { en: "The team has been working on this feature for two weeks.", ru: 'Команда работает над этой функцией уже две недели.' },
+          ]},
+        ]
+      },
+      {
+        id: 'en-s3-5', title: 'Future: will и going to',
+        html: `<p>В английском нет отдельного будущего времени — оно выражается разными конструкциями. Главное различие: <strong>will</strong> для спонтанных решений, <strong>going to</strong> для планов.</p>
+<h2>will + инфинитив</h2>
+<ul>
+  <li><strong>Спонтанное решение</strong>: «Сейчас решил» — <em>I'll fix it right now.</em></li>
+  <li><strong>Предсказание без доказательств</strong>: <em>This technology will change everything.</em></li>
+  <li><strong>Обещание</strong>: <em>I'll send you the report by 5 PM.</em></li>
+</ul>
+<h2>going to + инфинитив</h2>
+<ul>
+  <li><strong>Заранее запланированное намерение</strong>: <em>We're going to redesign the API next month.</em></li>
+  <li><strong>Предсказание на основе очевидных признаков</strong>: <em>Look at this code — it's going to fail at runtime.</em></li>
+</ul>
+<div class="note"><div class="note-lbl">Подсказка</div><p>Если можно добавить «уже запланировано» — используй <em>going to</em>. Если «только что решил» — <em>will</em>.</p></div>`,
+        phrases: [
+          { label: 'will vs. going to', pairs: [
+            { en: "The server is overloaded — it's going to crash.", ru: 'Сервер перегружен — он сейчас упадёт. (видно по признакам)' },
+            { en: "Don't worry, I'll handle the deployment.", ru: 'Не беспокойся, я возьмусь за деплой. (спонтанное решение)' },
+            { en: "We're going to refactor the entire codebase in Q3.", ru: 'Мы собираемся рефакторить всю кодовую базу в третьем квартале. (план)' },
+            { en: "I'll send you the documentation as soon as it's ready.", ru: 'Я отправлю тебе документацию, как только она будет готова. (обещание)' },
+            { en: 'Python will remain one of the most popular languages for years.', ru: 'Python останется одним из самых популярных языков ещё много лет. (предсказание)' },
+          ]},
+        ]
+      }
+    ]
+  },
+  {
+    id: 'ench4', num: '04', title: 'Модальные глаголы',
+    sections: [
+      {
+        id: 'en-s4-1', title: 'can / could',
+        html: `<p>Модальные глаголы не изменяются по лицам и числам (нет <em>-s</em>) и используются всегда с инфинитивом без <em>to</em>.</p>
+<h2>can — умею / могу / можно</h2>
+<table>
+  <tr><th>Значение</th><th>Пример</th></tr>
+  <tr><td>Способность (настоящее)</td><td><em>I can write Python scripts.</em></td></tr>
+  <tr><td>Разрешение</td><td><em>You can use the staging server.</em></td></tr>
+  <tr><td>Просьба</td><td><em>Can you review my code?</em></td></tr>
+  <tr><td>Возможность</td><td><em>This bug can cause data loss.</em></td></tr>
+</table>
+<h2>could — мог / мог бы / не могли бы вы</h2>
+<table>
+  <tr><th>Значение</th><th>Пример</th></tr>
+  <tr><td>Прошлая способность</td><td><em>I could read machine code when I was younger.</em></td></tr>
+  <tr><td>Вежливая просьба</td><td><em>Could you explain this function?</em></td></tr>
+  <tr><td>Возможность (сомнение)</td><td><em>This could be a memory leak.</em></td></tr>
+</table>`,
+        phrases: [
+          { label: 'can / could — примеры', pairs: [
+            { en: 'Can you push your changes to the feature branch?', ru: 'Можешь запушить изменения в ветку фичи?' },
+            { en: "I can't reproduce the bug on my machine.", ru: 'Я не могу воспроизвести баг на своей машине.' },
+            { en: 'Could you send me the error logs?', ru: 'Не могли бы вы прислать мне логи ошибок?' },
+            { en: 'This approach could cause performance issues.', ru: 'Этот подход может вызвать проблемы с производительностью.' },
+            { en: 'She could read assembly code back in 2010.', ru: 'Раньше, в 2010-м, она умела читать ассемблерный код.' },
+          ]},
+        ]
+      },
+      {
+        id: 'en-s4-2', title: 'must / have to / should',
+        html: `<p>Три глагола обязанности с разными оттенками значения — важно не путать их.</p>
+<h2>must — строгая обязанность / логический вывод</h2>
+<ul>
+  <li>Внутренняя уверенность, правило: <em>You must write tests for every new feature.</em></li>
+  <li>Логический вывод: <em>There must be a bug — the tests are failing.</em></li>
+</ul>
+<h2>have to — внешняя обязанность / необходимость</h2>
+<ul>
+  <li>Внешнее требование: <em>We have to follow the company's coding standards.</em></li>
+  <li>В прошедшем времени: <em>I had to rewrite the module from scratch.</em></li>
+</ul>
+<h2>mustn't vs. don't have to — важное различие!</h2>
+<table>
+  <tr><th>Форма</th><th>Значение</th><th>Пример</th></tr>
+  <tr><td><code>mustn't</code></td><td>Запрещено!</td><td><em>You mustn't push to main directly.</em></td></tr>
+  <tr><td><code>don't have to</code></td><td>Не обязательно (но можно)</td><td><em>You don't have to use TypeScript.</em></td></tr>
+</table>
+<h2>should — совет / рекомендация</h2>
+<p>Менее категорично, чем <em>must</em>: <em>You should document your functions.</em></p>`,
+        phrases: [
+          { label: 'must / have to / should — примеры', pairs: [
+            { en: 'You must not store passwords in plain text.', ru: 'Нельзя хранить пароли в открытом виде.' },
+            { en: "You don't have to use a framework — plain Python works too.", ru: 'Не обязательно использовать фреймворк — чистый Python тоже подойдёт.' },
+            { en: 'We have to finish the feature by Friday.', ru: 'Нам нужно закончить фичу к пятнице. (внешнее требование)' },
+            { en: 'This error must be coming from the network layer.', ru: 'Эта ошибка должна приходить с сетевого уровня. (логический вывод)' },
+            { en: 'You should add error handling to this function.', ru: 'Тебе стоит добавить обработку ошибок в эту функцию. (совет)' },
+          ]},
+        ]
+      },
+      {
+        id: 'en-s4-3', title: 'may / might / would',
+        html: `<p>Эти глаголы выражают вероятность, предположение и вежливые конструкции.</p>
+<h2>may / might — возможность, предположение</h2>
+<table>
+  <tr><th>Глагол</th><th>Вероятность</th><th>Пример</th></tr>
+  <tr><td><code>may</code></td><td>~60% — более вероятно</td><td><em>This may be a race condition.</em></td></tr>
+  <tr><td><code>might</code></td><td>~40% — менее вероятно</td><td><em>It might be a memory issue.</em></td></tr>
+</table>
+<h2>would — вежливость, условие, привычки в прошлом</h2>
+<ul>
+  <li><strong>Вежливая просьба</strong>: <em>Would you mind reviewing this PR?</em></li>
+  <li><strong>Условное наклонение</strong>: <em>I would refactor this if we had more time.</em></li>
+  <li><strong>Привычка в прошлом</strong>: <em>We would deploy every Friday back then.</em></li>
+</ul>`,
+        phrases: [
+          { label: 'may / might / would — примеры', pairs: [
+            { en: 'The API might be down — check the status page.', ru: 'API может быть недоступен — проверь страницу статуса.' },
+            { en: 'This change may break backward compatibility.', ru: 'Это изменение может нарушить обратную совместимость.' },
+            { en: 'Would you like me to help with the deployment?', ru: 'Хочешь, я помогу с деплоем?' },
+            { en: 'I would use a dictionary here instead of a list.', ru: 'Я бы использовал словарь здесь вместо списка.' },
+            { en: 'We would push code every two weeks in the old process.', ru: 'В старом процессе мы пушили код каждые две недели.' },
+          ]},
+        ]
+      }
+    ]
+  },
+  {
+    id: 'ench5', num: '05', title: 'IT-английский',
+    sections: [
+      {
+        id: 'en-s5-1', title: 'Описание кода и архитектуры',
+        html: `<p>Умение точно описать код на английском — важный навык для работы в международной команде, написания документации и участия в open source.</p>
+<h2>Полезные паттерны</h2>
+<ul>
+  <li>«Функция принимает X и возвращает Y»: <em>This function takes a list and returns a sorted copy.</em></li>
+  <li>«Цикл проходит по X»: <em>The loop iterates over all items in the collection.</em></li>
+  <li>«Если условие истинно»: <em>If the condition is True, the function raises an exception.</em></li>
+  <li>«Класс наследует от X»: <em>The class inherits from BaseModel.</em></li>
+  <li>«Метод переопределяет X»: <em>This method overrides the default behavior.</em></li>
+</ul>`,
+        phrases: [
+          { label: 'Описание функций и логики', pairs: [
+            { en: 'This function takes a string and returns its length.', ru: 'Эта функция принимает строку и возвращает её длину.' },
+            { en: 'The loop iterates over the list and filters out None values.', ru: 'Цикл проходит по списку и отфильтровывает значения None.' },
+            { en: 'If the key does not exist, the function returns a default value.', ru: 'Если ключ не существует, функция возвращает значение по умолчанию.' },
+            { en: 'The class inherits from Exception and adds a custom message.', ru: 'Класс наследует от Exception и добавляет пользовательское сообщение.' },
+            { en: 'This module handles all database connections and queries.', ru: 'Этот модуль управляет всеми подключениями к базе данных и запросами.' },
+            { en: 'The decorator caches the result of the function for 60 seconds.', ru: 'Декоратор кэширует результат функции на 60 секунд.' },
+          ]},
+          { label: 'Описание ошибок и проблем', pairs: [
+            { en: 'The test fails because the expected value is None.', ru: 'Тест падает, потому что ожидаемое значение равно None.' },
+            { en: 'There is a type mismatch — the function expects a string, not an integer.', ru: 'Несоответствие типов — функция ожидает строку, а не целое число.' },
+            { en: "I think the issue is related to the race condition in the async code.", ru: 'Думаю, проблема связана с гонкой условий в асинхронном коде.' },
+          ]},
+        ]
+      },
+      {
+        id: 'en-s5-2', title: 'Стендапы и встречи',
+        html: `<p>Daily standup — ежедневная короткая встреча команды. Стандартная структура: что сделал вчера, что делаешь сегодня, есть ли блокеры.</p>
+<h2>Структура стендапа</h2>
+<ul>
+  <li><strong>Yesterday:</strong> <em>Yesterday I worked on / I fixed / I reviewed…</em></li>
+  <li><strong>Today:</strong> <em>Today I'm going to / I'm planning to / I'll continue…</em></li>
+  <li><strong>Blockers:</strong> <em>I'm blocked by / I need help with / I'm waiting for…</em></li>
+</ul>
+<h2>Полезные фразы для встреч</h2>
+<ul>
+  <li>Не понял — <em>Could you repeat that, please? / Sorry, I didn't catch that.</em></li>
+  <li>Хочу добавить — <em>I'd like to add something. / Just to clarify…</em></li>
+  <li>Согласен — <em>That makes sense. / I agree with that approach.</em></li>
+  <li>Не уверен — <em>I'm not sure about that. / Let me check and get back to you.</em></li>
+</ul>`,
+        phrases: [
+          { label: 'Фразы для стендапа', pairs: [
+            { en: 'Yesterday I worked on the authentication module and fixed two bugs.', ru: 'Вчера я работал над модулем аутентификации и исправил два бага.' },
+            { en: "Today I'm going to write unit tests for the new API endpoints.", ru: 'Сегодня я собираюсь написать юнит-тесты для новых эндпоинтов API.' },
+            { en: "I'm blocked by the backend team — I'm waiting for the API spec.", ru: 'Меня блокирует бэкенд-команда — жду спецификации API.' },
+            { en: 'No blockers from my side. I should be done by EOD.', ru: 'С моей стороны блокеров нет. Должен закончить к концу рабочего дня.' },
+            { en: 'Could you clarify what the expected behaviour is in this case?', ru: 'Не могли бы вы уточнить, какое поведение ожидается в этом случае?' },
+          ]},
+          { label: 'Вопросы и уточнения на встречах', pairs: [
+            { en: 'Could you go over that again? I missed the beginning.', ru: 'Не могли бы вы повторить? Я пропустил начало.' },
+            { en: "Just to make sure I understand — are we saying that...?", ru: 'Чтобы убедиться, что я правильно понял — вы имеете в виду, что...?' },
+            { en: "That's a good point. I'd like to add that we also need to consider....", ru: 'Хорошее замечание. Хочу добавить, что нам также нужно учесть...' },
+            { en: "Let me check the logs and I'll get back to you in 10 minutes.", ru: 'Дай проверю логи, вернусь к тебе через 10 минут.' },
+          ]},
+        ]
+      },
+      {
+        id: 'en-s5-3', title: 'Деловая переписка',
+        html: `<p>Деловая переписка на английском требует знания стандартных формул открытия и закрытия письма, а также умения выражать просьбы вежливо.</p>
+<h2>Структура email</h2>
+<ol>
+  <li><strong>Subject</strong> — короткая тема: <em>Re: Bug in payment module / Question about API spec</em></li>
+  <li><strong>Greeting</strong>: <em>Hi [Name], / Dear [Name],</em></li>
+  <li><strong>Opening</strong>: <em>I hope you're doing well. / I'm writing to…</em></li>
+  <li><strong>Body</strong> — суть письма</li>
+  <li><strong>Closing</strong>: <em>Please let me know if you have any questions.</em></li>
+  <li><strong>Sign-off</strong>: <em>Best regards, / Thanks, / Kind regards,</em></li>
+</ol>
+<h2>Тон: формальный vs. неформальный</h2>
+<table>
+  <tr><th>Неформальный (чат, Slack)</th><th>Формальный (email, клиент)</th></tr>
+  <tr><td><em>Can you check this?</em></td><td><em>Could you please review the attached document?</em></td></tr>
+  <tr><td><em>FYI, the build broke.</em></td><td><em>I wanted to inform you that the build has failed.</em></td></tr>
+  <tr><td><em>LGTM!</em></td><td><em>The solution looks good to me.</em></td></tr>
+</table>`,
+        phrases: [
+          { label: 'Полезные фразы для переписки', pairs: [
+            { en: "I'm writing to follow up on the pull request I submitted last week.", ru: 'Пишу, чтобы уточнить статус пул-реквеста, который я отправил на прошлой неделе.' },
+            { en: 'Could you please provide more details about the expected behaviour?', ru: 'Не могли бы вы предоставить больше деталей об ожидаемом поведении?' },
+            { en: 'Please find the attached report with the test results.', ru: 'Пожалуйста, посмотрите прикреплённый отчёт с результатами тестов.' },
+            { en: "I'll look into it and get back to you by the end of the day.", ru: 'Я разберусь с этим и вернусь к вам до конца рабочего дня.' },
+            { en: 'Let me know if you need any additional information.', ru: 'Дайте знать, если вам нужна дополнительная информация.' },
+            { en: 'Thank you for the quick turnaround on this.', ru: 'Спасибо за быстрый ответ.' },
+          ]},
+        ]
+      }
+    ]
+  }
+];
 
 // ─── WORDS DATA ───────────────────────────────────────────────────────────────
 const WORDS = [
@@ -1777,49 +2325,29 @@ function renderWordCard() {
   document.getElementById('wg-note').textContent = w.note;
 }
 
-// ─── RENDER ENGLISH ───────────────────────────────────────────────────────────
-function renderEnglish() {
-  document.getElementById('topBar').innerHTML = '<a onclick="goHome()">PyLearn</a> &nbsp;/&nbsp; English';
+// ─── ENGLISH HOME ─────────────────────────────────────────────────────────────
+function renderEnglishHome() {
+  document.getElementById('topBar').innerHTML = '<a onclick="goEnHome()">PyLearn</a> &nbsp;/&nbsp; English';
   const ca = document.getElementById('contentArea');
-  ca.style.maxWidth = 'none';
-  ca.style.padding = '0';
+  ca.style.maxWidth = 'none'; ca.style.padding = '0';
   ca.innerHTML = `
     <div class="english-wrap">
       <div class="english-left">
         <h1>English Course</h1>
-        <p>Раздел с курсом английского языка находится в разработке. Скоро здесь появятся структурированные материалы для IT-специалистов.</p>
-        <span class="eng-badge">Скоро — Coming Soon</span>
-        <div class="english-features">
-          <div class="eng-feat">
-            <div class="eng-feat-icon">📖</div>
-            <div>
-              <div class="eng-feat-title">Грамматика для IT</div>
-              <div class="eng-feat-desc">Технический английский: описание функций, баг-репорты, код-ревью</div>
-            </div>
-          </div>
-          <div class="eng-feat">
-            <div class="eng-feat-icon">💬</div>
-            <div>
-              <div class="eng-feat-title">Разговорные конструкции</div>
-              <div class="eng-feat-desc">Стендапы, созвоны, переписка с командой на английском</div>
-            </div>
-          </div>
-          <div class="eng-feat">
-            <div class="eng-feat-icon">🎯</div>
-            <div>
-              <div class="eng-feat-title">IT-словарь</div>
-              <div class="eng-feat-desc">Термины, аббревиатуры и профессиональный жаргон разработчика</div>
-            </div>
-          </div>
+        <p>Практический курс английского для IT-специалистов. Грамматика, времена, модальные глаголы и разговорные конструкции для работы в команде.</p>
+        <p class="grid-title" style="margin-top:24px;">Содержание курса</p>
+        <div class="course-grid">
+          ${ENGLISH_COURSE.map(ch => `
+            <div class="course-card" onclick="navigateEn('${ch.id}','${ch.sections[0].id}')">
+              <div class="cc-num">Глава ${ch.num}</div>
+              <div class="cc-title">${ch.title}</div>
+              <div class="cc-count">${ch.sections.length} ${ch.sections.length < 5 ? 'раздела' : 'разделов'}</div>
+            </div>`).join('')}
         </div>
       </div>
-
       <div class="word-gen">
         <div class="wg-header">
-          <div>
-            <div class="wg-title">Слово дня</div>
-            <div class="wg-subtitle">IT-словарь разработчика</div>
-          </div>
+          <div><div class="wg-title">Слово дня</div><div class="wg-subtitle">IT-словарь разработчика</div></div>
           <div style="font-size:24px;">📚</div>
         </div>
         <div class="wg-body">
@@ -1829,29 +2357,59 @@ function renderEnglish() {
           <div class="wg-ru" id="wg-ru"></div>
           <div class="wg-divider"></div>
           <div class="wg-usage-lbl">Примеры использования</div>
-          <div class="wg-example">
-            <div class="wg-ex-flag">🇬🇧</div>
-            <div class="wg-ex-text" id="wg-en-ex"></div>
-          </div>
-          <div class="wg-example">
-            <div class="wg-ex-flag">🇷🇺</div>
-            <div class="wg-ex-text" id="wg-ru-ex"></div>
-          </div>
+          <div class="wg-example"><div class="wg-ex-flag">🇬🇧</div><div class="wg-ex-text" id="wg-en-ex"></div></div>
+          <div class="wg-example"><div class="wg-ex-flag">🇷🇺</div><div class="wg-ex-text" id="wg-ru-ex"></div></div>
           <div class="wg-usage-note" id="wg-note"></div>
         </div>
-        <div class="wg-footer">
-          <button class="wg-btn" onclick="generateWord()">Новое слово →</button>
-        </div>
+        <div class="wg-footer"><button class="wg-btn" onclick="generateWord()">Новое слово →</button></div>
       </div>
-    </div>
-  `;
+    </div>`;
   renderWordCard();
+}
+
+// ─── ENGLISH SECTION RENDER ───────────────────────────────────────────────────
+function flatEnSections() {
+  const r = []; ENGLISH_COURSE.forEach(ch => ch.sections.forEach(sec => r.push({ ch, sec }))); return r;
+}
+
+function phraseBlock(label, pairs, note) {
+  const rows = pairs.map(p =>
+    `<div class="ph-row"><div class="ph-en">${p.en}</div><div class="ph-ru">${p.ru}</div></div>`
+  ).join('');
+  const noteHtml = note ? `<div class="ph-note">${note}</div>` : '';
+  return `<div class="phrase-block"><div class="ph-hd">${label}</div>${rows}${noteHtml}</div>`;
+}
+
+function renderEnSection(ch, sec) {
+  const flat = flatEnSections();
+  const idx = flat.findIndex(x => x.sec.id === sec.id);
+  const prev = flat[idx - 1], next = flat[idx + 1];
+
+  document.getElementById('topBar').innerHTML =
+    `<a onclick="goEnHome()">PyLearn</a> &nbsp;/&nbsp; English / Глава ${ch.num} &nbsp;/&nbsp; ${sec.title}`;
+
+  const blocks = (sec.phrases || []).map(p => phraseBlock(p.label, p.pairs, p.note)).join('');
+
+  const prevBtn = prev
+    ? `<button class="nav-btn" onclick="navigateEn('${prev.ch.id}','${prev.sec.id}')"><span class="nav-btn-lbl">← Назад</span><span class="nav-btn-title">${prev.sec.title}</span></button>`
+    : `<div></div>`;
+  const nextBtn = next
+    ? `<button class="nav-btn next" onclick="navigateEn('${next.ch.id}','${next.sec.id}')"><span class="nav-btn-lbl">Далее →</span><span class="nav-btn-title">${next.sec.title}</span></button>`
+    : `<div></div>`;
+
+  document.getElementById('contentArea').innerHTML = `
+    <div>
+      <div class="sec-chapter-label">Глава ${ch.num} — ${ch.title}</div>
+      <h1 class="sec-title">${sec.title}</h1>
+      <div class="cb">${sec.html}</div>
+      ${blocks}
+      <div class="sec-nav">${prevBtn}${nextBtn}</div>
+    </div>`;
 }
 
 function resetContentArea() {
   const ca = document.getElementById('contentArea');
-  ca.style.maxWidth = '';
-  ca.style.padding = '';
+  ca.style.maxWidth = ''; ca.style.padding = '';
 }
 
 // ─── CODE BLOCK ───────────────────────────────────────────────────────────────
