@@ -459,7 +459,8 @@
       <li><a href="#gallery">Арты</a></li>
     </ul>
     <div class="auth-area" id="authArea">
-      <a href="#" class="auth-btn" id="loginBtnNav" onclick="startLogin()">Войти через GitHub</a>
+      <span class="user-name" id="navUsername" style="display:none;font-family:'Courier Prime',monospace;font-size:0.65rem;letter-spacing:0.15em;color:var(--grey-light);"></span>
+      <button class="logout-btn" id="navLogout" style="display:none;" onclick="logout()">Сбросить</button>
     </div>
   </nav>
 
@@ -467,21 +468,14 @@
   <div class="login-screen" id="loginScreen">
     <p class="hero-eyebrow" style="margin-bottom:1.5rem;">Словарный тренажёр · Обновляется ежедневно</p>
     <h1 class="login-title">Одно слово.<br><em>Каждый день.</em></h1>
-    <p class="login-sub">Расширяй словарный запас без лишнего шума. Введи GitHub токен — данные сохраняются лично для тебя в Gist.</p>
-    <div style="width:100%;max-width:420px;display:flex;flex-direction:column;gap:0.75rem;">
-      <input id="tokenInput" type="password"
-        placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
-        style="width:100%;background:transparent;border:1px solid rgba(240,237,232,0.2);color:var(--white);font-family:'Courier Prime',monospace;font-size:0.8rem;letter-spacing:0.1em;padding:0.9rem 1.2rem;outline:none;"
-        onkeydown="if(event.key==='Enter')submitToken()">
-      <a href="#" class="login-btn" style="justify-content:center;" onclick="submitToken()">
-        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:var(--black);"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
-        Войти
-      </a>
+    <p class="login-sub">Расширяй словарный запас без лишнего шума. Данные сохраняются в твоём браузере.</p>
+    <div style="width:100%;max-width:380px;display:flex;flex-direction:column;gap:0.75rem;">
+      <input id="nameInput" type="text" placeholder="Как тебя зовут?"
+        style="width:100%;background:transparent;border:1px solid rgba(240,237,232,0.2);color:var(--white);font-family:'EB Garamond',serif;font-size:1.1rem;padding:0.9rem 1.2rem;outline:none;"
+        onkeydown="if(event.key==='Enter')startLocal()">
+      <a href="#" class="login-btn" style="justify-content:center;" onclick="startLocal()">Начать</a>
     </div>
-    <p class="login-note" style="margin-top:2rem;">
-      Получи токен: GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)<br>
-      Нужен scope: <strong>gist</strong>
-    </p>
+    <p class="login-note" style="margin-top:2rem;">Прогресс сохраняется локально в браузере · Без регистрации</p>
   </div>
 
   <!-- LOADING -->
@@ -600,14 +594,11 @@
 
 <script>
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
-const GIST_FILENAME = 'wordly-data.json';
 const WORDS_RAW_URL = 'https://raw.githubusercontent.com/kade23255/wordly/main/words.json';
+const STORAGE_KEY = 'wordly-data';
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
-let token = localStorage.getItem('gh_token') || null;
-let user = null;
-let gistId = localStorage.getItem('gist_id') || null;
-let userData = { words: {}, streak: [], activeTopic: 'all' };
+let userData = { name: '', words: {}, streak: [], activeTopic: 'all' };
 let allWords = [];
 let currentFilter = 'all';
 
@@ -640,87 +631,42 @@ function showScreen(name) {
   document.getElementById('mainContent').classList.toggle('visible', name==='main');
 }
 
-// ─── AUTH ─────────────────────────────────────────────────────────────────────
-async function submitToken() {
-  const input = document.getElementById('tokenInput');
-  const t = input.value.trim();
-  if (!t) { showToast('Введи токен'); return; }
-  showScreen('loading');
+// ─── LOCAL STORAGE ────────────────────────────────────────────────────────────
+function saveLocal() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
+}
+
+function loadLocal() {
   try {
-    const res = await fetch('https://api.github.com/user', {
-      headers: { 'Authorization': `Bearer ${t}`, 'Accept': 'application/vnd.github+json' }
-    });
-    if (!res.ok) throw new Error('Invalid token');
-    token = t;
-    localStorage.setItem('gh_token', token);
-    await loadAndRender();
-  } catch(e) {
-    token = null;
-    showToast('Неверный токен. Попробуй ещё раз.');
-    showScreen('login');
-  }
-}
-
-function logout() {
-  localStorage.removeItem('gh_token');
-  localStorage.removeItem('gist_id');
-  token = null; gistId = null; user = null;
-  showScreen('login');
-  renderAuthArea(null);
-}
-
-// ─── GITHUB API ───────────────────────────────────────────────────────────────
-async function ghFetch(path, opts={}) {
-  const res = await fetch(`https://api.github.com${path}`, {
-    ...opts,
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/vnd.github+json',
-      'Content-Type': 'application/json',
-      ...(opts.headers||{})
-    }
-  });
-  if (res.status === 401) { logout(); throw new Error('Unauthorized'); }
-  return res.json();
-}
-
-async function getUser() {
-  return ghFetch('/user');
-}
-
-async function loadGist() {
-  if (gistId) {
-    try {
-      const g = await ghFetch(`/gists/${gistId}`);
-      const content = g.files?.[GIST_FILENAME]?.content;
-      if (content) return JSON.parse(content);
-    } catch(e) {}
-  }
-  // Search existing gists
-  const gists = await ghFetch('/gists');
-  const found = gists.find(g => g.files?.[GIST_FILENAME]);
-  if (found) {
-    gistId = found.id;
-    localStorage.setItem('gist_id', gistId);
-    const full = await ghFetch(`/gists/${gistId}`);
-    return JSON.parse(full.files[GIST_FILENAME].content);
-  }
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
   return null;
 }
 
-async function saveGist(data) {
-  const body = JSON.stringify({
-    description: 'Wordly — личные данные',
-    public: false,
-    files: { [GIST_FILENAME]: { content: JSON.stringify(data, null, 2) } }
-  });
-  if (gistId) {
-    await ghFetch(`/gists/${gistId}`, { method: 'PATCH', body });
-  } else {
-    const g = await ghFetch('/gists', { method: 'POST', body });
-    gistId = g.id;
-    localStorage.setItem('gist_id', gistId);
-  }
+// ─── AUTH ─────────────────────────────────────────────────────────────────────
+function startLocal() {
+  const input = document.getElementById('nameInput');
+  const name = input.value.trim() || 'Гость';
+  userData = { name, words: {}, streak: [], activeTopic: 'all' };
+  saveLocal();
+  renderNavUser(name);
+  loadAndRender();
+}
+
+function logout() {
+  localStorage.removeItem(STORAGE_KEY);
+  userData = { name: '', words: {}, streak: [], activeTopic: 'all' };
+  document.getElementById('navUsername').style.display = 'none';
+  document.getElementById('navLogout').style.display = 'none';
+  showScreen('login');
+}
+
+function renderNavUser(name) {
+  const el = document.getElementById('navUsername');
+  el.textContent = name;
+  el.style.display = 'inline';
+  document.getElementById('navLogout').style.display = 'inline-block';
 }
 
 // ─── WORDS DATA ───────────────────────────────────────────────────────────────
@@ -754,19 +700,6 @@ function getTodayWord(words) {
 }
 
 // ─── RENDER ───────────────────────────────────────────────────────────────────
-function renderAuthArea(u) {
-  const area = document.getElementById('authArea');
-  if (!u) {
-    area.innerHTML = `<a href="#" class="auth-btn" onclick="startLogin()">Войти через GitHub</a>`;
-  } else {
-    area.innerHTML = `
-      <div class="user-info">
-        <img class="user-avatar" src="${u.avatar_url}" alt="${u.login}">
-        <span class="user-name">${u.login}</span>
-      </div>
-      <button class="logout-btn" onclick="logout()">Выйти</button>`;
-  }
-}
 
 function renderWordOfDay(w) {
   const today = new Date();
@@ -779,7 +712,8 @@ function renderWordOfDay(w) {
   document.getElementById('wodExample').textContent = `"${w.example}"`;
   const tagsEl = document.getElementById('wodTags');
   tagsEl.innerHTML = (w.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('');
-  document.getElementById('heroSub').textContent = `Привет! Сегодня изучаем слово "${w.word}". Выбери тему или отметь прогресс.`;
+  const greeting = userData.name && userData.name !== 'Гость' ? `Привет, ${userData.name}! ` : '';
+  document.getElementById('heroSub').textContent = `${greeting}Сегодня изучаем слово "${w.word}". Выбери тему или отметь прогресс.`;
 }
 
 function renderTopics(words) {
@@ -966,8 +900,7 @@ async function markWord(status) {
   renderWordTable(currentFilter);
   renderProgress(allWords);
   showToast(status === 'known' ? '✓ Отмечено как знакомое' : '◈ Добавлено в изучение');
-
-  try { await saveGist(userData); } catch(e) { showToast('Ошибка сохранения'); }
+  saveLocal();
 }
 
 function selectTopic(topic, btn) {
@@ -985,46 +918,27 @@ function filterWords(filter, btn) {
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 async function loadAndRender() {
-  try {
-    user = await getUser();
-    renderAuthArea(user);
-
-    const saved = await loadGist();
-    if (saved) userData = { words:{}, streak:[], activeTopic:'all', ...saved };
-
-    allWords = await loadWords();
-
-    const today = getTodayWord(allWords);
-    renderWordOfDay(today);
-    renderTopics(allWords);
-    renderStats();
-    renderCalendar();
-    renderProgress(allWords);
-    renderWordTable('all');
-    renderArts(allWords);
-
-    showScreen('main');
-  } catch(e) {
-    console.error(e);
-    if (e.message === 'Unauthorized') return;
-    allWords = FALLBACK_WORDS;
-    renderWordOfDay(getTodayWord(allWords));
-    renderTopics(allWords);
-    renderStats();
-    renderCalendar();
-    renderProgress(allWords);
-    renderWordTable('all');
-    renderArts(allWords);
-    showScreen('main');
-  }
+  showScreen('loading');
+  allWords = await loadWords();
+  const today = getTodayWord(allWords);
+  renderWordOfDay(today);
+  renderTopics(allWords);
+  renderStats();
+  renderCalendar();
+  renderProgress(allWords);
+  renderWordTable('all');
+  renderArts(allWords);
+  showScreen('main');
 }
 
 async function init() {
-  if (!token) {
+  const saved = loadLocal();
+  if (!saved || !saved.name) {
     showScreen('login');
     return;
   }
-  showScreen('loading');
+  userData = { words:{}, streak:[], activeTopic:'all', ...saved };
+  renderNavUser(userData.name);
   await loadAndRender();
 }
 
