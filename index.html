@@ -579,8 +579,9 @@ function buildQueue(words) {
 function getTodayWords(words) {
   const today = todayStr();
   const stored = userData.todayQueue;
-  if (stored && stored.date === today) {
-    return words.filter(w => stored.words.includes(w.word));
+  if (stored && stored.date === today && stored.words.length === userData.prefs.wordsPerDay) {
+    const result = words.filter(w => stored.words.includes(w.word));
+    if (result.length === stored.words.length) return result;
   }
   const queue = buildQueue(words);
   const picked = queue.slice(0, userData.prefs.wordsPerDay).map(w => w.word);
@@ -772,6 +773,17 @@ function resetAll() {
   userData = { name:'', prefs:{ topics:['all'], level:'intermediate', wordsPerDay:3 }, words:{}, streak:[] };
   document.getElementById('navUser').style.display = 'none';
   document.getElementById('nameInput').value = '';
+
+  // reset topic chips
+  document.querySelectorAll('#topicChips .chip').forEach(c => c.classList.remove('selected'));
+  document.querySelector('#topicChips .chip[data-value="all"]').classList.add('selected');
+  // reset level chips
+  document.querySelectorAll('#levelChips .chip').forEach(c => c.classList.remove('selected'));
+  document.querySelector('#levelChips .chip[data-value="intermediate"]').classList.add('selected');
+  // reset count chips
+  document.querySelectorAll('#countChips .chip').forEach(c => c.classList.remove('selected'));
+  document.querySelector('#countChips .chip[data-value="3"]').classList.add('selected');
+
   showScreen('screenLogin');
 }
 
