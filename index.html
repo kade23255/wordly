@@ -3,926 +3,1435 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WORDLY — слова каждый день</title>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<title>PyLearn — Изучение Python</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <style>
-  :root {
-    --black: #080808;
-    --white: #f0ede8;
-    --grey-dim: #2a2a2a;
-    --grey-mid: #555;
-    --grey-light: #999;
-    --line: rgba(240,237,232,0.12);
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body {
-    background: var(--black);
-    color: var(--white);
-    font-family: 'EB Garamond', Georgia, serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-    cursor: none;
-  }
-  .cursor {
-    width: 8px; height: 8px;
-    background: var(--white);
-    border-radius: 50%;
-    position: fixed;
-    pointer-events: none;
-    z-index: 9999;
-    transition: transform 0.15s ease;
-    transform: translate(-50%, -50%);
-  }
-  .cursor-ring {
-    width: 32px; height: 32px;
-    border: 1px solid rgba(240,237,232,0.4);
-    border-radius: 50%;
-    position: fixed;
-    pointer-events: none;
-    z-index: 9998;
-    transform: translate(-50%, -50%);
-  }
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-    opacity: 0.35;
-    pointer-events: none;
-    z-index: 0;
-  }
-  .site-wrap { position: relative; z-index: 1; }
-  @keyframes scanline { 0%{transform:translateY(-100%)} 100%{transform:translateY(100vh)} }
-  .scanline { position: fixed; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(transparent, rgba(240,237,232,0.04), transparent); animation: scanline 8s linear infinite; pointer-events: none; z-index: 0; }
+:root {
+  --bg: #ffffff;
+  --sidebar-bg: #f8faff;
+  --border: #e2e8f0;
+  --primary: #2563eb;
+  --primary-light: #eff6ff;
+  --primary-dark: #1d4ed8;
+  --text: #1e293b;
+  --text-muted: #64748b;
+  --text-light: #94a3b8;
+  --tag-bg: #f1f5f9;
+  --note-bg: #eff6ff;
+  --warn-bg: #fffbeb;
+  --warn: #f59e0b;
+  --sidebar-w: 272px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.6;
+}
 
-  /* NAV */
-  nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 2rem 3rem;
-    border-bottom: 1px solid var(--line);
-    position: sticky;
-    top: 0;
-    background: rgba(8,8,8,0.92);
-    backdrop-filter: blur(12px);
-    z-index: 100;
-  }
-  .logo { font-family: 'Courier Prime', monospace; font-size: 0.75rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--white); text-decoration: none; }
-  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
-  .nav-links a { font-family: 'Courier Prime', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--grey-light); text-decoration: none; transition: color 0.2s; }
-  .nav-links a:hover { color: var(--white); }
-  .nav-user { display: flex; align-items: center; gap: 1rem; }
-  .nav-username { font-family: 'Courier Prime', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: var(--grey-light); }
-  .nav-reset { font-family: 'Courier Prime', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--grey-mid); background: transparent; border: 1px solid var(--line); padding: 0.4rem 0.8rem; cursor: none; transition: all 0.2s; }
-  .nav-reset:hover { color: var(--white); border-color: var(--grey-mid); }
+/* ── LAYOUT ── */
+.app { display: flex; height: 100vh; overflow: hidden; }
 
-  /* TOAST */
-  .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--white); color: var(--black); font-family: 'Courier Prime', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; padding: 0.8rem 1.5rem; transition: transform 0.3s cubic-bezier(0.16,1,0.3,1); z-index: 1000; pointer-events: none; }
-  .toast.show { transform: translateX(-50%) translateY(0); }
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.sidebar-top {
+  padding: 22px 20px 0;
+  flex-shrink: 0;
+}
+.logo { font-size: 20px; font-weight: 700; color: var(--primary); letter-spacing: -0.5px; }
+.logo-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; margin-bottom: 16px; }
+.tab-row {
+  display: flex; gap: 4px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.tab-btn {
+  flex: 1; padding: 7px 10px;
+  font-size: 13px; font-weight: 500; font-family: inherit;
+  border: 1px solid var(--border); border-radius: 6px;
+  background: transparent; color: var(--text-muted);
+  cursor: pointer; transition: all 0.15s;
+}
+.tab-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+.tab-btn:hover:not(.active) { background: var(--border); color: var(--text); }
 
-  /* SCREENS */
-  .screen { display: none; }
-  .screen.visible { display: block; }
+.chapter-list { flex: 1; overflow-y: auto; padding: 8px 0 16px; }
+.chapter-list::-webkit-scrollbar { width: 4px; }
+.chapter-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-  /* LOGIN SCREEN */
-  .login-wrap {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    min-height: calc(100vh - 80px); padding: 3rem; text-align: center;
-  }
-  .login-title { font-size: clamp(3rem, 6vw, 5rem); font-weight: 400; line-height: 1; letter-spacing: -0.02em; margin-bottom: 1.5rem; }
-  .login-title em { font-style: italic; color: var(--grey-mid); }
-  .login-sub { font-size: 1.1rem; color: var(--grey-light); max-width: 400px; line-height: 1.7; margin-bottom: 2.5rem; }
-  .login-input {
-    width: 100%; max-width: 340px;
-    background: transparent; border: 1px solid rgba(240,237,232,0.2);
-    color: var(--white); font-family: 'EB Garamond', serif; font-size: 1.15rem;
-    padding: 0.85rem 1.2rem; outline: none; margin-bottom: 0.75rem;
-    transition: border-color 0.2s;
-  }
-  .login-input:focus { border-color: rgba(240,237,232,0.5); }
-  .login-input::placeholder { color: var(--grey-mid); }
-  .btn-primary {
-    display: inline-block; font-family: 'Courier Prime', monospace; font-size: 0.7rem;
-    letter-spacing: 0.25em; text-transform: uppercase; color: var(--black);
-    background: var(--white); border: none; padding: 0.85rem 2rem; cursor: none;
-    transition: opacity 0.2s; text-decoration: none; width: 100%; max-width: 340px; text-align: center;
-  }
-  .btn-primary:hover { opacity: 0.85; }
-  .login-note { margin-top: 2rem; font-family: 'Courier Prime', monospace; font-size: 0.6rem; letter-spacing: 0.15em; color: var(--grey-mid); }
+.chapter-hd {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 20px; cursor: pointer; user-select: none;
+  font-size: 13px; font-weight: 600; color: var(--text);
+  transition: background 0.1s;
+}
+.chapter-hd:hover { background: rgba(0,0,0,0.04); }
+.ch-num {
+  font-size: 10px; font-weight: 700; color: var(--primary);
+  background: var(--primary-light); padding: 2px 7px;
+  border-radius: 10px; min-width: 28px; text-align: center; flex-shrink: 0;
+}
+.ch-arr { margin-left: auto; font-size: 10px; color: var(--text-light); transition: transform 0.2s; }
+.chapter-item.open .ch-arr { transform: rotate(90deg); }
+.sec-list { display: none; }
+.chapter-item.open .sec-list { display: block; }
+.sec-link {
+  display: block; padding: 6px 20px 6px 50px;
+  font-size: 13px; color: var(--text-muted);
+  cursor: pointer; transition: all 0.1s;
+  border-left: 2px solid transparent; margin-left: 0;
+}
+.sec-link:hover { color: var(--text); background: rgba(37,99,235,0.04); }
+.sec-link.active { color: var(--primary); border-left-color: var(--primary); background: var(--primary-light); font-weight: 500; }
 
-  /* ONBOARDING */
-  .onboard-wrap {
-    max-width: 680px; margin: 0 auto;
-    padding: 5rem 3rem; display: flex; flex-direction: column; gap: 3.5rem;
-  }
-  .onboard-heading { font-size: clamp(2rem, 4vw, 3rem); font-weight: 400; letter-spacing: -0.02em; }
-  .onboard-heading em { font-style: italic; color: var(--grey-mid); }
-  .onboard-section { display: flex; flex-direction: column; gap: 1rem; }
-  .onboard-label { font-family: 'Courier Prime', monospace; font-size: 0.6rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--grey-mid); }
-  .chip-group { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-  .chip {
-    font-family: 'Courier Prime', monospace; font-size: 0.65rem; letter-spacing: 0.15em;
-    text-transform: uppercase; border: 1px solid var(--grey-dim); color: var(--grey-mid);
-    padding: 0.55rem 1rem; cursor: none; transition: all 0.2s; background: transparent;
-  }
-  .chip:hover { border-color: var(--grey-light); color: var(--grey-light); }
-  .chip.selected { border-color: var(--white); color: var(--white); background: rgba(240,237,232,0.06); }
-  .onboard-btn { align-self: flex-start; }
+/* ── MAIN ── */
+.main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+.top-bar {
+  padding: 11px 48px; border-bottom: 1px solid var(--border);
+  font-size: 12px; color: var(--text-muted);
+  background: var(--bg); position: sticky; top: 0; z-index: 10;
+  min-height: 44px; display: flex; align-items: center;
+}
+.top-bar a { color: var(--primary); cursor: pointer; text-decoration: none; }
+.top-bar a:hover { text-decoration: underline; }
+.content-area { padding: 48px; max-width: 840px; }
 
-  /* MAIN SCREEN */
+/* ── HOME ── */
+.home-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--primary-light); color: var(--primary);
+  font-size: 12px; font-weight: 600; padding: 4px 12px;
+  border-radius: 20px; margin-bottom: 20px;
+}
+.home-title {
+  font-size: 38px; font-weight: 700; line-height: 1.15;
+  letter-spacing: -1px; margin-bottom: 14px;
+}
+.home-title span { color: var(--primary); }
+.home-desc { font-size: 16px; color: var(--text-muted); max-width: 580px; line-height: 1.7; margin-bottom: 36px; }
+.about-card {
+  background: var(--primary-light); border: 1px solid #bfdbfe;
+  border-radius: 12px; padding: 26px 28px;
+  display: flex; gap: 18px; align-items: flex-start; margin-bottom: 48px;
+}
+.about-av {
+  width: 48px; height: 48px; background: var(--primary); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.about-text h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+.about-text p { font-size: 14px; color: var(--text-muted); line-height: 1.65; }
 
-  /* HERO */
-  .hero {
-    text-align: center;
-    padding: 6rem 3rem 4rem;
-    border-bottom: 1px solid var(--line);
-  }
-  .hero-eyebrow { font-family: 'Courier Prime', monospace; font-size: 0.6rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--grey-mid); margin-bottom: 1.5rem; }
-  .hero-title { font-size: clamp(3.5rem, 8vw, 7rem); font-weight: 400; line-height: 0.95; letter-spacing: -0.02em; margin-bottom: 1.5rem; }
-  .hero-title em { font-style: italic; color: var(--grey-mid); }
-  .hero-sub { font-size: 1.1rem; color: var(--grey-light); }
+.grid-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+.course-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
+.course-card {
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: 18px 20px; cursor: pointer; transition: all 0.15s;
+}
+.course-card:hover {
+  border-color: var(--primary); background: var(--primary-light);
+  box-shadow: 0 4px 12px rgba(37,99,235,0.1); transform: translateY(-1px);
+}
+.cc-num { font-size: 11px; font-weight: 700; color: var(--primary); letter-spacing: 0.5px; margin-bottom: 6px; }
+.cc-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+.cc-count { font-size: 12px; color: var(--text-muted); }
 
-  /* WORD CARDS */
-  .words-section { padding: 4rem 3rem; display: flex; flex-direction: column; gap: 2px; }
-  .word-card {
-    border: 1px solid var(--line);
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0;
-    position: relative;
-    overflow: hidden;
-  }
-  .word-card::before { content: ''; position: absolute; top: 0; left: 0; width: 1px; height: 100%; background: linear-gradient(to bottom, transparent, var(--white), transparent); opacity: 0.1; }
-  .wc-left { padding: 3.5rem 3rem; border-right: 1px solid var(--line); }
-  .wc-right { padding: 3.5rem 3rem; }
-  .wc-date { font-family: 'Courier Prime', monospace; font-size: 0.55rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--grey-mid); margin-bottom: 2rem; }
-  .wc-word { font-size: clamp(3rem, 6vw, 5.5rem); font-weight: 400; line-height: 1; letter-spacing: -0.03em; margin-bottom: 0.5rem; }
-  .wc-phonetic { font-family: 'Courier Prime', monospace; font-size: 0.8rem; color: var(--grey-mid); margin-bottom: 0.75rem; }
-  .wc-pos { font-family: 'Courier Prime', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--grey-mid); }
-  .wc-ru { font-size: 1.5rem; font-weight: 400; margin-bottom: 1.25rem; line-height: 1.3; }
-  .wc-en { font-size: 1rem; color: var(--grey-light); line-height: 1.6; margin-bottom: 1.25rem; }
-  .wc-example { font-style: italic; font-size: 0.95rem; color: var(--grey-mid); line-height: 1.6; border-left: 1px solid var(--line); padding-left: 1.25rem; margin-bottom: 2rem; }
-  .wc-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
-  .wc-btn {
-    font-family: 'Courier Prime', monospace; font-size: 0.6rem; letter-spacing: 0.2em;
-    text-transform: uppercase; border: 1px solid var(--line); color: var(--grey-mid);
-    background: transparent; padding: 0.55rem 1.1rem; cursor: none; transition: all 0.2s;
-  }
-  .wc-btn:hover { color: var(--white); border-color: var(--grey-mid); }
-  .wc-btn.primary { color: var(--black); background: var(--white); border-color: var(--white); }
-  .wc-btn.primary:hover { opacity: 0.85; }
-  .wc-btn.done-known { color: var(--white); border-color: var(--white); background: rgba(240,237,232,0.08); }
-  .wc-btn.done-learning { color: var(--grey-light); border-color: var(--grey-mid); }
-  .wc-tags { margin-top: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap; }
-  .tag { font-family: 'Courier Prime', monospace; font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase; border: 1px solid var(--grey-dim); color: var(--grey-mid); padding: 0.3rem 0.6rem; }
+/* ── SECTION CONTENT ── */
+.sec-chapter-label {
+  font-size: 12px; font-weight: 600; color: var(--primary);
+  text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;
+}
+.sec-title { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 28px; line-height: 1.2; }
 
-  .divider { height: 1px; background: var(--line); margin: 0 3rem; }
-  .section-label { font-family: 'Courier Prime', monospace; font-size: 0.6rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--grey-mid); padding: 0 3rem; margin-bottom: 2rem; }
+.cb h2 { font-size: 19px; font-weight: 700; margin: 32px 0 12px; }
+.cb h3 { font-size: 16px; font-weight: 600; margin: 24px 0 8px; }
+.cb p { margin-bottom: 14px; line-height: 1.75; }
+.cb ul, .cb ol { margin: 10px 0 18px 22px; }
+.cb li { margin-bottom: 6px; line-height: 1.65; }
+.cb code {
+  font-family: 'JetBrains Mono', monospace; font-size: 13px;
+  background: var(--tag-bg); color: #c026d3; padding: 1px 6px; border-radius: 4px;
+}
+.cb strong { font-weight: 600; }
+.cb table { width: 100%; border-collapse: collapse; margin: 16px 0 20px; font-size: 14px; }
+.cb th { background: var(--tag-bg); padding: 9px 14px; text-align: left; font-weight: 600; border: 1px solid var(--border); }
+.cb td { padding: 9px 14px; border: 1px solid var(--border); }
+.cb td code { font-size: 12px; }
 
-  /* STATS */
-  .stats-section { padding: 4rem 3rem 0; }
-  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; border: 1px solid var(--line); margin-bottom: 3rem; }
-  .stat-cell { padding: 2.5rem 2rem; border-right: 1px solid var(--line); }
-  .stat-cell:last-child { border-right: 0; }
-  .stat-num { font-size: 3.5rem; font-weight: 400; line-height: 1; letter-spacing: -0.03em; margin-bottom: 0.5rem; }
-  .stat-label { font-family: 'Courier Prime', monospace; font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--grey-mid); }
+.note {
+  background: var(--note-bg); border-left: 3px solid var(--primary);
+  padding: 14px 16px; border-radius: 0 8px 8px 0; margin: 18px 0; font-size: 14px;
+}
+.note-lbl { font-weight: 600; color: var(--primary); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.note p { margin: 0; }
+.warn { background: var(--warn-bg); border-left-color: var(--warn); }
+.warn .note-lbl { color: var(--warn); }
 
-  /* CALENDAR */
-  .streak-wrap { border: 1px solid var(--line); padding: 2.5rem; }
-  .streak-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-  .streak-title { font-family: 'Courier Prime', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--grey-mid); }
-  .cal-months { display: flex; justify-content: space-between; margin-bottom: 1rem; }
-  .cal-month-label { font-family: 'Courier Prime', monospace; font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--grey-mid); }
-  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-  .cal-day { aspect-ratio: 1; border: 1px solid transparent; transition: all 0.15s; cursor: none; }
-  .cal-day.done { background: rgba(240,237,232,0.15); border-color: rgba(240,237,232,0.1); }
-  .cal-day.today { background: var(--white); }
-  .cal-day.missed { background: rgba(240,237,232,0.03); border-color: var(--line); }
+/* ── CODE BLOCK ── */
+.code-block { margin: 18px 0; border-radius: 10px; overflow: hidden; border: 1px solid #1e3a5f; }
+.code-hd {
+  background: #1e293b; padding: 9px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.code-lang { font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; font-family: 'JetBrains Mono', monospace; }
+.code-copy {
+  font-size: 11px; color: #64748b; cursor: pointer;
+  border: none; background: transparent; font-family: inherit;
+  padding: 2px 8px; border-radius: 4px; transition: all 0.15s;
+}
+.code-copy:hover { background: #334155; color: #94a3b8; }
+.code-copy.copied { color: #10b981; }
+.code-block pre { margin: 0 !important; border-radius: 0 !important; }
+.code-block pre code.hljs { font-family: 'JetBrains Mono', monospace !important; font-size: 13.5px !important; padding: 18px !important; }
 
-  /* PROGRESS */
-  .progress-section { padding: 3rem 3rem 0; }
-  .progress-item { display: grid; grid-template-columns: 180px 1fr 60px; align-items: center; gap: 2rem; padding: 1.25rem 0; border-bottom: 1px solid var(--line); }
-  .progress-name { font-family: 'Courier Prime', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--grey-light); }
-  .progress-bar-wrap { height: 1px; background: var(--grey-dim); }
-  .progress-bar-fill { height: 100%; background: var(--white); transition: width 1.5s cubic-bezier(0.16,1,0.3,1); }
-  .progress-pct { font-family: 'Courier Prime', monospace; font-size: 0.7rem; color: var(--grey-mid); text-align: right; }
+/* ── NAV BUTTONS ── */
+.sec-nav { display: flex; justify-content: space-between; margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border); gap: 12px; }
+.nav-btn {
+  display: flex; flex-direction: column; gap: 3px;
+  padding: 12px 18px; border: 1px solid var(--border); border-radius: 8px;
+  cursor: pointer; background: transparent; font-family: inherit;
+  transition: all 0.15s; text-align: left; max-width: 280px;
+}
+.nav-btn:hover { border-color: var(--primary); background: var(--primary-light); }
+.nav-btn-lbl { font-size: 11px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+.nav-btn-title { font-size: 13px; font-weight: 600; color: var(--text); }
+.nav-btn.next { text-align: right; margin-left: auto; }
+.nav-spacer { flex: 1; }
 
-  /* WORD TABLE */
-  .wordlist-section { padding: 4rem 3rem; }
-  .wordlist-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; }
-  .wordlist-title { font-size: 2.5rem; font-weight: 400; letter-spacing: -0.02em; }
-  .wordlist-controls { display: flex; gap: 1rem; }
-  .ctrl-btn { font-family: 'Courier Prime', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--grey-mid); background: transparent; border: 1px solid var(--line); padding: 0.5rem 1rem; cursor: none; transition: all 0.2s; }
-  .ctrl-btn:hover { color: var(--white); border-color: var(--grey-mid); }
-  .ctrl-btn.active { color: var(--white); border-color: var(--white); background: rgba(240,237,232,0.05); }
-  .word-table { width: 100%; border-collapse: collapse; }
-  .word-table thead tr { border-bottom: 1px solid var(--line); }
-  .word-table th { font-family: 'Courier Prime', monospace; font-size: 0.55rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--grey-mid); padding: 1.2rem 1rem; text-align: left; font-weight: 400; }
-  .word-table td { padding: 1.4rem 1rem; border-bottom: 1px solid var(--line); font-size: 1rem; }
-  .w-word { font-size: 1.2rem; letter-spacing: -0.01em; }
-  .w-pos { font-family: 'Courier Prime', monospace; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--grey-mid); }
-  .w-def { color: var(--grey-light); font-size: 0.95rem; }
-  .w-date { font-family: 'Courier Prime', monospace; font-size: 0.65rem; color: var(--grey-mid); }
-  .w-status { display: inline-block; width: 6px; height: 6px; border-radius: 50%; }
-  .w-status.known { background: var(--white); }
-  .w-status.learning { background: var(--grey-mid); }
+/* ── ENGLISH PLACEHOLDER ── */
+.english-ph { text-align: center; padding: 80px 40px; }
+.english-ph-icon { font-size: 60px; margin-bottom: 20px; }
+.english-ph h1 { font-size: 26px; font-weight: 700; margin-bottom: 10px; }
+.english-ph p { color: var(--text-muted); font-size: 15px; max-width: 380px; margin: 0 auto; line-height: 1.65; }
+.english-ph .badge { display: inline-block; margin-top: 20px; background: var(--warn-bg); color: var(--warn); font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 20px; border: 1px solid #fde68a; }
 
-  footer { padding: 3rem; border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; margin-top: 5rem; }
-  .footer-copy { font-family: 'Courier Prime', monospace; font-size: 0.6rem; letter-spacing: 0.2em; color: var(--grey-mid); }
-
-  /* LOADING */
-  .loading-wrap { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 80px); }
-  .loading-dots { font-family: 'Courier Prime', monospace; font-size: 0.7rem; letter-spacing: 0.3em; color: var(--grey-mid); text-transform: uppercase; }
-  @keyframes blink { 0%,100%{opacity:0.2} 50%{opacity:1} }
-  .loading-dots span { animation: blink 1.4s infinite; }
-  .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
-
-  /* EXERCISE MODAL */
-  .ex-modal { display:none; position:fixed; inset:0; background:rgba(8,8,8,0.96); z-index:500; align-items:center; justify-content:center; backdrop-filter:blur(8px); }
-  .ex-modal.visible { display:flex; }
-  .ex-box { width:100%; max-width:560px; border:1px solid var(--line); padding:3rem; margin:1rem; background:#0d0d0d; }
-  .ex-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:2.5rem; }
-  .ex-dots { display:flex; gap:6px; margin-top:0.6rem; }
-  .ex-dot { width:32px; height:2px; background:var(--grey-dim); transition:background 0.3s; }
-  .ex-dot.done { background:var(--grey-mid); }
-  .ex-dot.active { background:var(--white); }
-  .ex-progress-label { font-family:'Courier Prime',monospace; font-size:0.55rem; letter-spacing:0.35em; text-transform:uppercase; color:var(--grey-mid); }
-  .ex-close { font-family:'Courier Prime',monospace; font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--grey-mid); background:transparent; border:none; cursor:none; transition:color 0.2s; }
-  .ex-close:hover { color:var(--white); }
-  .ex-type { font-family:'Courier Prime',monospace; font-size:0.55rem; letter-spacing:0.35em; text-transform:uppercase; color:var(--grey-mid); margin-bottom:1rem; }
-  .ex-question { font-size:1.6rem; font-weight:400; margin-bottom:1.5rem; line-height:1.25; }
-  .ex-subtext { font-style:italic; font-size:1.05rem; color:var(--grey-light); line-height:1.65; margin-bottom:1.75rem; border-left:1px solid var(--line); padding-left:1.25rem; }
-  .ex-options { display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1.5rem; }
-  .ex-option { text-align:left; font-family:'EB Garamond',serif; font-size:1.1rem; color:var(--grey-light); background:transparent; border:1px solid var(--grey-dim); padding:0.85rem 1.25rem; cursor:none; transition:all 0.15s; }
-  .ex-option:hover:not(:disabled) { border-color:var(--grey-mid); color:var(--white); }
-  .ex-option.correct { border-color:var(--white); color:var(--white); background:rgba(240,237,232,0.06); }
-  .ex-option.wrong { border-color:#8b2020; color:#c0392b; background:rgba(192,57,43,0.05); }
-  .ex-option:disabled { opacity:0.7; }
-  .ex-feedback { font-family:'Courier Prime',monospace; font-size:0.65rem; letter-spacing:0.15em; padding:0.75rem 1rem; margin-bottom:1.25rem; }
-  .ex-feedback.success { color:var(--white); border-left:2px solid var(--white); }
-  .ex-feedback.error { color:#c0392b; border-left:2px solid #8b2020; }
-  .ex-result { text-align:center; padding:1rem 0; }
-  .ex-result-score { font-size:5rem; font-weight:400; line-height:1; letter-spacing:-0.03em; margin-bottom:0.25rem; }
-  .ex-result-label { font-family:'Courier Prime',monospace; font-size:0.6rem; letter-spacing:0.3em; text-transform:uppercase; color:var(--grey-mid); margin-bottom:2rem; }
-  .ex-result-msg { font-size:1.1rem; color:var(--grey-light); line-height:1.6; margin-bottom:2rem; }
-  .ex-result-actions { display:flex; gap:0.75rem; justify-content:center; flex-wrap:wrap; }
-
-  @media (max-width: 768px) {
-    nav { padding: 1.5rem; }
-    .nav-links { display: none; }
-    .hero { padding: 3rem 1.5rem 2.5rem; }
-    .words-section { padding: 2rem 1.5rem; }
-    .word-card { grid-template-columns: 1fr; }
-    .wc-left { border-right: none; border-bottom: 1px solid var(--line); padding: 2rem 1.5rem; }
-    .wc-right { padding: 2rem 1.5rem; }
-    .stats-grid { grid-template-columns: repeat(2, 1fr); }
-    .stats-section, .progress-section, .wordlist-section, .section-label { padding-left: 1.5rem; padding-right: 1.5rem; }
-    .divider { margin: 0 1.5rem; }
-    .progress-item { grid-template-columns: 100px 1fr 40px; gap: 1rem; }
-    .onboard-wrap { padding: 3rem 1.5rem; }
-    footer { padding: 2rem 1.5rem; flex-direction: column; gap: 1rem; }
-  }
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .content-area { padding: 24px; }
+  .home-title { font-size: 26px; }
+  .course-grid { grid-template-columns: 1fr 1fr; }
+  .top-bar { padding: 11px 24px; }
+}
 </style>
 </head>
 <body>
+<div class="app">
 
-<div class="cursor" id="cursor"></div>
-<div class="cursor-ring" id="cursorRing"></div>
-<div class="scanline"></div>
-<div class="toast" id="toast"></div>
-
-<div class="site-wrap">
-
-  <nav>
-    <a href="#" class="logo">Wordly</a>
-    <ul class="nav-links">
-      <li><a href="#words">Слова</a></li>
-      <li><a href="#stats">Статистика</a></li>
-      <li><a href="#history">История</a></li>
-    </ul>
-    <div class="nav-user" id="navUser" style="display:none;">
-      <span class="nav-username" id="navUsername"></span>
-      <button class="nav-reset" onclick="resetAll()">Сбросить</button>
-    </div>
-  </nav>
-
-  <!-- LOGIN -->
-  <div class="screen" id="screenLogin">
-    <div class="login-wrap">
-      <p class="hero-eyebrow" style="margin-bottom:1.5rem;">Словарный тренажёр · Обновляется ежедневно</p>
-      <h1 class="login-title">Одно слово.<br><em>Каждый день.</em></h1>
-      <p class="login-sub">Расширяй словарный запас без лишнего шума. Данные сохраняются в твоём браузере.</p>
-      <input class="login-input" id="nameInput" type="text" placeholder="Как тебя зовут?"
-        onkeydown="if(event.key==='Enter')goToOnboarding()">
-      <a href="#" class="btn-primary" onclick="goToOnboarding()">Продолжить →</a>
-      <p class="login-note">Без регистрации · Данные хранятся локально</p>
-    </div>
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-top">
+    <div class="logo">PyLearn</div>
+    <div class="logo-sub">Интерактивный курс программирования</div>
   </div>
-
-  <!-- ONBOARDING -->
-  <div class="screen" id="screenOnboarding">
-    <div class="onboard-wrap">
-      <h2 class="onboard-heading">Настроим<br><em>твой словарь</em></h2>
-
-      <div class="onboard-section">
-        <p class="onboard-label">// что хочешь учить?</p>
-        <div class="chip-group" id="topicChips">
-          <button class="chip selected" data-value="all" onclick="toggleChip(this,'topics')">Всё подряд</button>
-          <button class="chip" data-value="Повседневная речь" onclick="toggleChip(this,'topics')">Повседневная речь</button>
-          <button class="chip" data-value="Бизнес" onclick="toggleChip(this,'topics')">Бизнес</button>
-          <button class="chip" data-value="Наука" onclick="toggleChip(this,'topics')">Наука</button>
-          <button class="chip" data-value="Искусство" onclick="toggleChip(this,'topics')">Искусство</button>
-          <button class="chip" data-value="Философия" onclick="toggleChip(this,'topics')">Философия</button>
-          <button class="chip" data-value="Литература" onclick="toggleChip(this,'topics')">Литература</button>
-          <button class="chip" data-value="Психология" onclick="toggleChip(this,'topics')">Психология</button>
-        </div>
-      </div>
-
-      <div class="onboard-section">
-        <p class="onboard-label">// твой уровень английского</p>
-        <div class="chip-group" id="levelChips">
-          <button class="chip" data-value="beginner" onclick="selectOne(this,'levelChips')">Начинающий (A2–B1)</button>
-          <button class="chip selected" data-value="intermediate" onclick="selectOne(this,'levelChips')">Средний (B1–B2)</button>
-          <button class="chip" data-value="advanced" onclick="selectOne(this,'levelChips')">Продвинутый (C1–C2)</button>
-        </div>
-      </div>
-
-      <div class="onboard-section">
-        <p class="onboard-label">// слов в день</p>
-        <div class="chip-group" id="countChips">
-          <button class="chip" data-value="1" onclick="selectOne(this,'countChips')">1 слово</button>
-          <button class="chip selected" data-value="3" onclick="selectOne(this,'countChips')">3 слова</button>
-          <button class="chip" data-value="5" onclick="selectOne(this,'countChips')">5 слов</button>
-          <button class="chip" data-value="10" onclick="selectOne(this,'countChips')">10 слов</button>
-        </div>
-      </div>
-
-      <a href="#" class="btn-primary onboard-btn" onclick="finishOnboarding()">Начать учить →</a>
-    </div>
+  <div class="tab-row">
+    <button class="tab-btn active" id="tabPython" onclick="switchTab('python')">Python</button>
+    <button class="tab-btn" id="tabEnglish" onclick="switchTab('english')">English</button>
   </div>
+  <div class="chapter-list" id="chapterList"></div>
+</aside>
 
-  <!-- LOADING -->
-  <div class="screen" id="screenLoading">
-    <div class="loading-wrap">
-      <div class="loading-dots">Загрузка <span>.</span><span>.</span><span>.</span></div>
-    </div>
-  </div>
-
-  <!-- MAIN -->
-  <div class="screen" id="screenMain">
-
-    <section class="hero">
-      <p class="hero-eyebrow" id="heroEyebrow">Словарный тренажёр · Обновляется ежедневно</p>
-      <h1 class="hero-title">Одно слово.<br><em>Каждый день.</em></h1>
-      <p class="hero-sub" id="heroSub"></p>
-    </section>
-
-    <section class="words-section" id="words">
-      <div id="wordCards"></div>
-    </section>
-
-    <div class="divider"></div>
-
-    <section class="stats-section" id="stats">
-      <p class="section-label" style="padding:0;margin-bottom:2rem;">// личная статистика</p>
-      <div class="stats-grid">
-        <div class="stat-cell"><div class="stat-num" id="statWords">0</div><div class="stat-label">Слов изучено</div></div>
-        <div class="stat-cell"><div class="stat-num" id="statStreak">0</div><div class="stat-label">Серия дней</div></div>
-        <div class="stat-cell"><div class="stat-num" id="statAccuracy">0</div><div class="stat-label">% знаю</div></div>
-        <div class="stat-cell"><div class="stat-num" id="statTotal">0</div><div class="stat-label">Всего слов</div></div>
-      </div>
-      <div class="streak-wrap">
-        <div class="streak-header">
-          <span class="streak-title" id="streakTitle">// активность</span>
-          <span style="font-family:'Courier Prime',monospace;font-size:0.65rem;color:var(--grey-mid);" id="streakBadge">◈ 0 дней подряд</span>
-        </div>
-        <div class="cal-months">
-          <span class="cal-month-label">Пн</span><span class="cal-month-label">Вт</span>
-          <span class="cal-month-label">Ср</span><span class="cal-month-label">Чт</span>
-          <span class="cal-month-label">Пт</span><span class="cal-month-label">Сб</span>
-          <span class="cal-month-label">Вс</span>
-        </div>
-        <div class="cal-grid" id="calGrid"></div>
-      </div>
-    </section>
-
-    <div class="progress-section">
-      <p class="section-label" style="padding:0;margin-bottom:0.5rem;">// прогресс по темам</p>
-      <div id="progressList"></div>
-    </div>
-
-    <div class="divider" style="margin-top:3rem;"></div>
-
-    <section class="wordlist-section" id="history">
-      <div class="wordlist-header">
-        <h2 class="wordlist-title">История слов</h2>
-        <div class="wordlist-controls">
-          <button class="ctrl-btn active" onclick="filterWords('all',this)">Все</button>
-          <button class="ctrl-btn" onclick="filterWords('known',this)">Знаю</button>
-          <button class="ctrl-btn" onclick="filterWords('learning',this)">Учу</button>
-        </div>
-      </div>
-      <table class="word-table">
-        <thead><tr>
-          <th>Слово</th><th>Часть речи</th><th>Значение (RU)</th><th>Статус</th>
-        </tr></thead>
-        <tbody id="wordTableBody"></tbody>
-      </table>
-    </section>
-
-    <footer>
-      <span class="footer-copy">© 2026 Wordly · Данные хранятся в вашем браузере</span>
-    </footer>
-  </div>
-
+<!-- MAIN -->
+<div class="main">
+  <div class="top-bar" id="topBar"></div>
+  <div class="content-area" id="contentArea"></div>
 </div>
 
-<!-- EXERCISE MODAL -->
-<div class="ex-modal" id="exerciseModal">
-  <div class="ex-box">
-    <div id="exContent">
-      <div class="ex-header">
-        <div>
-          <div class="ex-progress-label" id="exProgressLabel">Упражнение 1 из 3</div>
-          <div class="ex-dots" id="exDots"></div>
-        </div>
-        <button class="ex-close" onclick="closeExercise()">✕ закрыть</button>
-      </div>
-      <div class="ex-type" id="exType"></div>
-      <div class="ex-question" id="exQuestion"></div>
-      <div class="ex-subtext" id="exSubtext" style="display:none;"></div>
-      <div class="ex-options" id="exOptions"></div>
-      <div class="ex-feedback" id="exFeedback" style="display:none;"></div>
-      <button class="btn-primary" id="exNext" onclick="nextExercise()" style="display:none;">Следующее →</button>
-    </div>
-    <div id="exResult" style="display:none;">
-      <div class="ex-result">
-        <div class="ex-result-score" id="exResultScore"></div>
-        <div class="ex-result-label">из 3 верно</div>
-        <div class="ex-result-msg" id="exResultMsg"></div>
-        <div class="ex-result-actions">
-          <button class="wc-btn primary" id="exMarkKnown" onclick="markKnownFromExercise()" style="display:none;">✓ Перенести в «Знаю»</button>
-          <button class="wc-btn" onclick="closeExercise()">Закрыть</button>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
-
 <script>
-// ─── CONFIG ───────────────────────────────────────────────────────────────────
-const WORDS_URL = './words.json';
-const STORAGE_KEY = 'wordly-v2';
+// ─── COURSE DATA ───────────────────────────────────────────────────────────────
+const COURSE = [
+  {
+    id: 'ch1', num: '01', title: 'Введение в Python',
+    sections: [
+      {
+        id: 's1-1', title: 'Что такое Python?',
+        html: `<p>Python — высокоуровневый язык программирования общего назначения, созданный <strong>Гвидо ван Россумом</strong> в 1991 году. Он известен своим чистым синтаксисом, читаемостью кода и огромной экосистемой библиотек.</p>
+<h2>Где применяется Python?</h2>
+<ul>
+  <li><strong>Веб-разработка</strong> — Django, Flask, FastAPI</li>
+  <li><strong>Наука о данных и ИИ</strong> — NumPy, Pandas, TensorFlow, PyTorch</li>
+  <li><strong>Автоматизация</strong> — скрипты, боты, парсеры сайтов</li>
+  <li><strong>DevOps и системное администрирование</strong></li>
+  <li><strong>Кибербезопасность</strong> — тестирование на проникновение</li>
+  <li><strong>Разработка игр</strong> — Pygame</li>
+</ul>
+<h2>Преимущества Python</h2>
+<ul>
+  <li>Простой и читаемый синтаксис — код похож на обычный текст</li>
+  <li>Огромное сообщество и документация</li>
+  <li>Более 400 000 библиотек на PyPI</li>
+  <li>Кроссплатформенный: Windows, macOS, Linux</li>
+  <li>Одна из самых востребованных специализаций на рынке труда</li>
+</ul>
+<div class="note"><div class="note-lbl">Интересный факт</div><p>Название «Python» придумано не в честь змеи, а в честь британского комедийного шоу «Летающий цирк Монти Пайтона».</p></div>`,
+        examples: [{ label: 'Первая программа', code: `# Самая первая программа на Python
+print("Привет, мир!")
+print("Меня зовут Александр, я изучаю Python!")` }]
+      },
+      {
+        id: 's1-2', title: 'Установка Python',
+        html: `<p>Для работы с Python необходимо установить интерпретатор. Всегда используйте актуальную версию Python 3 (Python 2 больше не поддерживается).</p>
+<h2>Шаги установки</h2>
+<ol>
+  <li>Перейдите на официальный сайт <code>python.org</code></li>
+  <li>Скачайте установщик для вашей ОС (Windows, macOS или Linux)</li>
+  <li>При установке на Windows обязательно поставьте галочку <strong>«Add Python to PATH»</strong></li>
+  <li>Проверьте установку в терминале</li>
+</ol>
+<h2>Редакторы кода</h2>
+<ul>
+  <li><strong>VS Code</strong> — бесплатный, лёгкий, популярный</li>
+  <li><strong>PyCharm</strong> — профессиональная IDE для Python</li>
+  <li><strong>Jupyter Notebook</strong> — удобен для науки о данных</li>
+  <li><strong>IDLE</strong> — встроенная среда, идеальна для новичков</li>
+</ul>
+<div class="note"><div class="note-lbl">Совет</div><p>Для быстрого старта можно использовать онлайн-среды: <code>replit.com</code>, <code>trinket.io</code> или <code>colab.research.google.com</code> — никакой установки не нужно.</p></div>`,
+        examples: [{ label: 'Проверка версии Python', code: `# В терминале выполните:
+# python --version   или   python3 --version
 
-// ─── STATE ────────────────────────────────────────────────────────────────────
-let userData = {
-  name: '',
-  prefs: { topics: ['all'], level: 'intermediate', wordsPerDay: 3 },
-  words: {},
-  streak: [],
-  activeTopic: 'all'
-};
-let allWords = [];
-let todayWords = [];
-let currentFilter = 'all';
+# Запуск интерактивного интерпретатора (REPL):
+# python
 
-// ─── PERSISTENCE ──────────────────────────────────────────────────────────────
-function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(userData)); }
-function load() {
-  try { const r = localStorage.getItem(STORAGE_KEY); return r ? JSON.parse(r) : null; } catch(e) { return null; }
+# Запуск скрипта:
+# python my_script.py` }]
+      },
+      {
+        id: 's1-3', title: 'Первая программа',
+        html: `<p>Традиционно первая программа выводит текст «Hello, World!». В Python это делается одной строкой. Разберём её структуру.</p>
+<h2>Функция print()</h2>
+<p>Функция <code>print()</code> выводит данные в консоль. Она может принимать несколько значений через запятую.</p>
+<h2>Комментарии</h2>
+<p>Комментарии — строки, которые Python игнорирует. Они нужны для пояснений в коде. В Python комментарий начинается с символа <code>#</code>.</p>
+<div class="note"><div class="note-lbl">Важно</div><p>Python чувствителен к отступам. Неправильные отступы вызывают ошибку <code>IndentationError</code>. Используйте 4 пробела (стандарт PEP 8).</p></div>`,
+        examples: [
+          { label: 'Hello, World!', code: `print("Hello, World!")  # выводит текст
+print("Привет,", "мир!")  # несколько аргументов
+print(42)           # вывод числа
+print(3.14)         # вывод дробного числа` },
+          { label: 'Комментарии', code: `# Это однострочный комментарий
+print("Программа запущена")  # комментарий после кода
+
+# Многострочный комментарий
+# можно написать несколько
+# строк подряд с решёткой
+
+"""
+Тройные кавычки тоже используются
+для многострочных пояснений (docstrings)
+"""` }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'ch2', num: '02', title: 'Переменные и типы данных',
+    sections: [
+      {
+        id: 's2-1', title: 'Переменные',
+        html: `<p>Переменная — это имя, которое ссылается на значение в памяти. В Python переменные создаются при первом присваивании значения — объявлять тип заранее не нужно.</p>
+<h2>Правила именования</h2>
+<ul>
+  <li>Только буквы, цифры и знак подчёркивания <code>_</code></li>
+  <li>Не должно начинаться с цифры</li>
+  <li>Регистр важен: <code>name</code> и <code>Name</code> — разные переменные</li>
+  <li>Нельзя использовать зарезервированные слова: <code>if</code>, <code>for</code>, <code>class</code> и т.д.</li>
+</ul>
+<h2>Стиль именования (PEP 8)</h2>
+<ul>
+  <li><strong>snake_case</strong> — для переменных и функций: <code>user_name</code>, <code>total_price</code></li>
+  <li><strong>UPPER_CASE</strong> — для констант: <code>MAX_SIZE</code>, <code>PI</code></li>
+  <li><strong>PascalCase</strong> — для классов: <code>UserProfile</code></li>
+</ul>`,
+        examples: [{ label: 'Создание переменных', code: `name = "Александр"
+age = 24
+height = 1.80
+is_developer = True
+
+# Несколько переменных за раз
+x, y, z = 1, 2, 3
+
+# Одно значение нескольким переменным
+a = b = c = 0
+
+print(name, age, height)
+print(type(name))   # <class 'str'>
+print(type(age))    # <class 'int'>` }]
+      },
+      {
+        id: 's2-2', title: 'Числа: int и float',
+        html: `<p>Python поддерживает несколько числовых типов. Чаще всего используются <code>int</code> (целые числа) и <code>float</code> (числа с плавающей точкой).</p>
+<table>
+  <tr><th>Тип</th><th>Описание</th><th>Пример</th></tr>
+  <tr><td><code>int</code></td><td>Целое число</td><td><code>42, -7, 0</code></td></tr>
+  <tr><td><code>float</code></td><td>Дробное число</td><td><code>3.14, -0.5, 1.0</code></td></tr>
+  <tr><td><code>complex</code></td><td>Комплексное число</td><td><code>2+3j</code></td></tr>
+</table>
+<div class="note"><div class="note-lbl">Особенность float</div><p>Числа с плавающей точкой могут давать неточные результаты из-за двоичного представления. Например, <code>0.1 + 0.2 = 0.30000000000000004</code>.</p></div>`,
+        examples: [{ label: 'Работа с числами', code: `a = 10        # int
+b = 3.14      # float
+c = 2 + 3j    # complex
+
+# Арифметика
+print(10 + 3)   # 13  — сложение
+print(10 - 3)   # 7   — вычитание
+print(10 * 3)   # 30  — умножение
+print(10 / 3)   # 3.333...  — деление (всегда float)
+print(10 // 3)  # 3   — целочисленное деление
+print(10 % 3)   # 1   — остаток от деления
+print(10 ** 3)  # 1000 — возведение в степень
+
+# Преобразование типов
+print(int(3.9))   # 3 (усечение, не округление)
+print(float(5))   # 5.0
+print(round(3.14159, 2))  # 3.14` }]
+      },
+      {
+        id: 's2-3', title: 'Строки (str)',
+        html: `<p>Строка — это последовательность символов. В Python строки неизменяемы (immutable): после создания их нельзя изменить, только создать новую.</p>
+<h2>Создание строк</h2>
+<p>Строки можно заключать в одинарные <code>'...'</code>, двойные <code>"..."</code> или тройные кавычки <code>"""..."""</code>.</p>
+<h2>Основные операции</h2>
+<ul>
+  <li><strong>Конкатенация</strong> — объединение: <code>"Hello" + " " + "World"</code></li>
+  <li><strong>Повторение</strong>: <code>"ha" * 3 → "hahaha"</code></li>
+  <li><strong>Длина</strong>: <code>len("Python") → 6</code></li>
+  <li><strong>Индексация</strong>: <code>"Python"[0] → "P"</code></li>
+  <li><strong>Срезы</strong>: <code>"Python"[1:4] → "yth"</code></li>
+</ul>`,
+        examples: [
+          { label: 'Основы строк', code: `name = "Александр"
+greeting = 'Привет'
+multiline = """Это
+многострочная
+строка"""
+
+print(len(name))       # 9
+print(name[0])         # А (первый символ)
+print(name[-1])        # р (последний символ)
+print(name[0:4])       # Алек (срез)
+print(name.upper())    # АЛЕКСАНДР
+print(name.lower())    # александр
+print(name.replace("Александр", "Python"))  # Python` },
+          { label: 'f-строки (форматирование)', code: `name = "Александр"
+age = 24
+job = "инженер-программист"
+
+# f-строка — самый удобный способ
+greeting = f"Привет! Меня зовут {name}, мне {age} лет."
+print(greeting)
+
+# Выражения внутри f-строк
+print(f"Через 5 лет мне будет {age + 5} лет")
+print(f"Профессия: {job.capitalize()}")
+
+# Форматирование чисел
+pi = 3.14159
+print(f"Число π ≈ {pi:.2f}")  # 3.14` }
+        ]
+      },
+      {
+        id: 's2-4', title: 'bool и None',
+        html: `<p>Тип <code>bool</code> имеет только два значения: <code>True</code> и <code>False</code>. Используется в условных выражениях и логических операциях.</p>
+<h2>Истинность значений</h2>
+<p>В Python любое значение можно проверить на истинность. «Ложными» считаются:</p>
+<ul>
+  <li><code>False</code>, <code>0</code>, <code>0.0</code></li>
+  <li>Пустая строка <code>""</code></li>
+  <li>Пустые коллекции: <code>[]</code>, <code>{}</code>, <code>()</code></li>
+  <li><code>None</code></li>
+</ul>
+<h2>None</h2>
+<p><code>None</code> — специальный объект, обозначающий отсутствие значения. Аналог <code>null</code> в других языках. Тип — <code>NoneType</code>.</p>`,
+        examples: [{ label: 'bool и None', code: `is_student = True
+is_employed = False
+
+print(type(True))   # <class 'bool'>
+print(int(True))    # 1
+print(int(False))   # 0
+
+# Истинность разных значений
+print(bool(0))       # False
+print(bool(42))      # True
+print(bool(""))      # False
+print(bool("Hi"))    # True
+print(bool([]))      # False
+
+# None
+result = None
+print(result)         # None
+print(result is None) # True` }]
+      }
+    ]
+  },
+  {
+    id: 'ch3', num: '03', title: 'Операторы',
+    sections: [
+      {
+        id: 's3-1', title: 'Арифметические операторы',
+        html: `<p>Арифметические операторы выполняют математические операции над числами.</p>
+<table>
+  <tr><th>Оператор</th><th>Описание</th><th>Пример</th><th>Результат</th></tr>
+  <tr><td><code>+</code></td><td>Сложение</td><td><code>7 + 3</code></td><td><code>10</code></td></tr>
+  <tr><td><code>-</code></td><td>Вычитание</td><td><code>7 - 3</code></td><td><code>4</code></td></tr>
+  <tr><td><code>*</code></td><td>Умножение</td><td><code>7 * 3</code></td><td><code>21</code></td></tr>
+  <tr><td><code>/</code></td><td>Деление</td><td><code>7 / 3</code></td><td><code>2.333...</code></td></tr>
+  <tr><td><code>//</code></td><td>Целочисленное деление</td><td><code>7 // 3</code></td><td><code>2</code></td></tr>
+  <tr><td><code>%</code></td><td>Остаток от деления</td><td><code>7 % 3</code></td><td><code>1</code></td></tr>
+  <tr><td><code>**</code></td><td>Степень</td><td><code>2 ** 8</code></td><td><code>256</code></td></tr>
+</table>`,
+        examples: [{ label: 'Арифметика', code: `a, b = 17, 5
+
+print(a + b)   # 22
+print(a - b)   # 12
+print(a * b)   # 85
+print(a / b)   # 3.4
+print(a // b)  # 3  (отбрасывает дробную часть)
+print(a % b)   # 2  (17 = 5*3 + 2)
+print(a ** b)  # 1419857 (17^5)
+
+# Проверка чётности через %
+n = 10
+if n % 2 == 0:
+    print(f"{n} — чётное число")` }]
+      },
+      {
+        id: 's3-2', title: 'Операторы сравнения и присваивания',
+        html: `<p>Операторы сравнения возвращают <code>True</code> или <code>False</code>. Операторы составного присваивания сокращают запись.</p>
+<h2>Операторы сравнения</h2>
+<table>
+  <tr><th>Оператор</th><th>Значение</th></tr>
+  <tr><td><code>==</code></td><td>Равно</td></tr>
+  <tr><td><code>!=</code></td><td>Не равно</td></tr>
+  <tr><td><code>&gt;</code></td><td>Больше</td></tr>
+  <tr><td><code>&lt;</code></td><td>Меньше</td></tr>
+  <tr><td><code>&gt;=</code></td><td>Больше или равно</td></tr>
+  <tr><td><code>&lt;=</code></td><td>Меньше или равно</td></tr>
+</table>
+<h2>Логические операторы</h2>
+<ul>
+  <li><code>and</code> — истина, если оба условия истинны</li>
+  <li><code>or</code> — истина, если хотя бы одно истинно</li>
+  <li><code>not</code> — инвертирует значение</li>
+</ul>`,
+        examples: [{ label: 'Сравнение и логика', code: `x = 10
+
+print(x == 10)   # True
+print(x != 5)    # True
+print(x > 15)    # False
+print(x >= 10)   # True
+
+# Логические операторы
+age = 25
+has_passport = True
+
+can_travel = age >= 18 and has_passport
+print(can_travel)  # True
+
+print(not True)    # False
+print(5 > 3 or 2 > 10)  # True
+
+# Составное присваивание
+n = 10
+n += 5   # n = n + 5  →  15
+n -= 3   # n = n - 3  →  12
+n *= 2   # n = n * 2  →  24
+n //= 5  # n = n // 5 →  4
+print(n)` }]
+      }
+    ]
+  },
+  {
+    id: 'ch4', num: '04', title: 'Ввод и вывод',
+    sections: [
+      {
+        id: 's4-1', title: 'print() и input()',
+        html: `<p>Функция <code>print()</code> выводит данные в консоль, а <code>input()</code> получает данные от пользователя.</p>
+<h2>Параметры print()</h2>
+<ul>
+  <li><code>sep</code> — разделитель между значениями (по умолчанию пробел)</li>
+  <li><code>end</code> — символ в конце строки (по умолчанию перенос строки <code>\n</code>)</li>
+</ul>
+<h2>Функция input()</h2>
+<p><code>input()</code> всегда возвращает строку. Если нужно число, преобразуйте его через <code>int()</code> или <code>float()</code>.</p>
+<div class="warn note"><div class="note-lbl">Важно</div><p>Результат <code>input()</code> — всегда строка <code>str</code>. Без преобразования <code>int(input())</code> арифметика не сработает.</p></div>`,
+        examples: [
+          { label: 'print() с параметрами', code: `print("Python", "крутой", "язык")          # Python крутой язык
+print("Python", "крутой", sep="-")         # Python-крутой
+print("Первая строка", end=" ")
+print("на той же строке")                  # Первая строка на той же строке
+
+# Escape-символы
+print("Строка 1\nСтрока 2")    # перенос строки
+print("Колонка 1\tКолонка 2")  # табуляция` },
+          { label: 'input() — ввод данных', code: `name = input("Введите ваше имя: ")
+print(f"Привет, {name}!")
+
+age = int(input("Сколько вам лет? "))
+print(f"Через 10 лет вам будет {age + 10} лет")
+
+# Ввод дробного числа
+price = float(input("Введите цену: "))
+print(f"С НДС (20%): {price * 1.2:.2f} руб.")` }
+        ]
+      },
+      {
+        id: 's4-2', title: 'Форматирование строк',
+        html: `<p>Python предлагает несколько способов форматирования строк. Современный и рекомендуемый — f-строки (f-strings), появившиеся в Python 3.6.</p>
+<h2>Способы форматирования</h2>
+<ul>
+  <li><strong>f-строки</strong> — <code>f"Привет, {name}!"</code> — рекомендуется</li>
+  <li><strong>.format()</strong> — <code>"Привет, {}!".format(name)</code></li>
+  <li><strong>%-форматирование</strong> — старый стиль, не рекомендуется</li>
+</ul>`,
+        examples: [{ label: 'Форматирование', code: `name = "Александр"
+score = 95.678
+items = 3
+
+# f-строки (Python 3.6+)
+print(f"Студент: {name}")
+print(f"Балл: {score:.1f}")       # 95.7 (1 знак после точки)
+print(f"Баллов: {score:.0f}")     # 96 (без дробной части)
+print(f"Товаров: {items:03d}")    # 003 (с ведущими нулями)
+print(f"{'По центру':^20}")       # выравнивание по центру
+print(f"{'Право':>20}")           # выравнивание по правому краю
+
+# .format()
+print("Студент: {}, балл: {:.2f}".format(name, score))
+
+# Многострочные f-строки
+info = (
+    f"Имя:   {name}\n"
+    f"Балл:  {score:.1f}\n"
+    f"Товаров: {items}"
+)
+print(info)` }]
+      }
+    ]
+  },
+  {
+    id: 'ch5', num: '05', title: 'Условные конструкции',
+    sections: [
+      {
+        id: 's5-1', title: 'if / elif / else',
+        html: `<p>Условная конструкция позволяет выполнять разный код в зависимости от условия. В Python отступы определяют блоки кода — скобок нет.</p>
+<h2>Синтаксис</h2>
+<p>Структура: <code>if</code> (обязательно) → <code>elif</code> (опционально, сколько угодно) → <code>else</code> (опционально).</p>
+<div class="note"><div class="note-lbl">Отступы</div><p>Тело каждого блока должно иметь одинаковый отступ — 4 пробела (стандарт) или 1 табуляция. Смешивать нельзя.</p></div>`,
+        examples: [
+          { label: 'Базовые условия', code: `age = 20
+
+if age < 18:
+    print("Вы несовершеннолетний")
+elif age < 65:
+    print("Вы трудоспособного возраста")
+else:
+    print("Вы пенсионного возраста")
+
+# Вывод: Вы трудоспособного возраста` },
+          { label: 'Тернарный оператор', code: `score = 75
+
+# Однострочный if-else
+result = "Сдал" if score >= 60 else "Не сдал"
+print(result)  # Сдал
+
+# Вложенные условия
+x = 15
+if x > 0:
+    if x % 2 == 0:
+        print("Положительное чётное")
+    else:
+        print("Положительное нечётное")
+else:
+    print("Отрицательное или ноль")` },
+          { label: 'Практический пример', code: `grade = int(input("Введите оценку (0-100): "))
+
+if grade >= 90:
+    letter = "Отлично (A)"
+elif grade >= 80:
+    letter = "Хорошо (B)"
+elif grade >= 70:
+    letter = "Удовлетворительно (C)"
+elif grade >= 60:
+    letter = "Зачёт (D)"
+else:
+    letter = "Неудовлетворительно (F)"
+
+print(f"Ваша оценка: {letter}")` }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'ch6', num: '06', title: 'Циклы',
+    sections: [
+      {
+        id: 's6-1', title: 'Цикл for',
+        html: `<p>Цикл <code>for</code> перебирает элементы итерируемого объекта: строки, списка, диапазона <code>range()</code> и других коллекций.</p>
+<h2>Функция range()</h2>
+<ul>
+  <li><code>range(n)</code> — числа от 0 до n-1</li>
+  <li><code>range(start, stop)</code> — от start до stop-1</li>
+  <li><code>range(start, stop, step)</code> — с шагом</li>
+</ul>`,
+        examples: [
+          { label: 'Цикл for', code: `# Перебор диапазона
+for i in range(5):
+    print(i)  # 0 1 2 3 4
+
+# С шагом
+for i in range(0, 10, 2):
+    print(i)  # 0 2 4 6 8
+
+# Перебор строки
+for char in "Python":
+    print(char)  # P y t h o n
+
+# Перебор списка
+fruits = ["яблоко", "банан", "груша"]
+for fruit in fruits:
+    print(f"Фрукт: {fruit}")
+
+# С индексом через enumerate
+for i, fruit in enumerate(fruits, start=1):
+    print(f"{i}. {fruit}")` },
+          { label: 'break и continue', code: `# break — выход из цикла
+for i in range(10):
+    if i == 5:
+        break
+    print(i)  # 0 1 2 3 4
+
+# continue — пропустить итерацию
+for i in range(10):
+    if i % 2 == 0:
+        continue  # пропускаем чётные
+    print(i)  # 1 3 5 7 9
+
+# else в цикле — выполняется, если не было break
+for i in range(5):
+    print(i)
+else:
+    print("Цикл завершён нормально")` }
+        ]
+      },
+      {
+        id: 's6-2', title: 'Цикл while',
+        html: `<p>Цикл <code>while</code> выполняется, пока условие истинно. Используйте его, когда заранее неизвестно количество итераций.</p>
+<div class="warn note"><div class="note-lbl">Осторожно</div><p>Если условие всегда истинно и нет <code>break</code>, цикл будет бесконечным. Всегда убедитесь, что условие в итоге станет ложным.</p></div>`,
+        examples: [{ label: 'Цикл while', code: `# Базовый while
+count = 0
+while count < 5:
+    print(f"Итерация {count}")
+    count += 1
+
+# Угадай число
+import random
+secret = random.randint(1, 10)
+attempts = 0
+
+while True:
+    guess = int(input("Угадайте число (1-10): "))
+    attempts += 1
+    if guess == secret:
+        print(f"Верно! Понадобилось {attempts} попыток")
+        break
+    elif guess < secret:
+        print("Больше!")
+    else:
+        print("Меньше!")` }]
+      }
+    ]
+  },
+  {
+    id: 'ch7', num: '07', title: 'Структуры данных',
+    sections: [
+      {
+        id: 's7-1', title: 'Списки (list)',
+        html: `<p>Список — упорядоченная изменяемая коллекция элементов любого типа. Один из самых используемых типов данных в Python.</p>
+<h2>Ключевые методы</h2>
+<ul>
+  <li><code>append(x)</code> — добавить в конец</li>
+  <li><code>insert(i, x)</code> — вставить по индексу</li>
+  <li><code>remove(x)</code> — удалить первое вхождение</li>
+  <li><code>pop(i)</code> — удалить и вернуть элемент</li>
+  <li><code>sort()</code> — сортировать</li>
+  <li><code>reverse()</code> — развернуть</li>
+  <li><code>len(lst)</code> — длина</li>
+  <li><code>x in lst</code> — проверка наличия</li>
+</ul>`,
+        examples: [
+          { label: 'Работа со списком', code: `# Создание
+numbers = [3, 1, 4, 1, 5, 9, 2, 6]
+mixed = [1, "два", 3.0, True, None]
+empty = []
+
+# Доступ к элементам
+print(numbers[0])    # 3 (первый)
+print(numbers[-1])   # 6 (последний)
+print(numbers[2:5])  # [4, 1, 5] (срез)
+
+# Изменение
+numbers.append(7)       # добавить в конец
+numbers.insert(0, 0)    # вставить на позицию 0
+numbers.remove(1)       # удалить первую 1
+popped = numbers.pop()  # удалить и вернуть последний
+
+# Полезные операции
+print(len(numbers))          # длина
+print(5 in numbers)          # True — проверка
+print(sorted(numbers))       # отсортированная копия
+print(sum(numbers))          # сумма
+print(min(numbers), max(numbers))  # мин/макс` },
+          { label: 'Списковые включения (list comprehension)', code: `# Обычный способ
+squares = []
+for i in range(10):
+    squares.append(i ** 2)
+
+# Списковое включение — лаконично и быстро
+squares = [i ** 2 for i in range(10)]
+print(squares)  # [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+
+# С условием
+evens = [x for x in range(20) if x % 2 == 0]
+print(evens)  # [0, 2, 4, 6, 8, 10, 12, 14, 16, 18]
+
+# Вложенные
+matrix = [[i * j for j in range(1, 4)] for i in range(1, 4)]
+# [[1,2,3],[2,4,6],[3,6,9]]` }
+        ]
+      },
+      {
+        id: 's7-2', title: 'Словари (dict)',
+        html: `<p>Словарь — коллекция пар «ключ: значение». Ключи уникальны и неизменяемы. Начиная с Python 3.7 словари сохраняют порядок вставки.</p>
+<h2>Основные методы</h2>
+<ul>
+  <li><code>keys()</code> — все ключи</li>
+  <li><code>values()</code> — все значения</li>
+  <li><code>items()</code> — пары (ключ, значение)</li>
+  <li><code>get(key, default)</code> — безопасный доступ</li>
+  <li><code>update(d)</code> — обновить из другого словаря</li>
+  <li><code>pop(key)</code> — удалить и вернуть значение</li>
+</ul>`,
+        examples: [{ label: 'Словари', code: `# Создание
+person = {
+    "name": "Александр",
+    "age": 24,
+    "job": "инженер-программист",
+    "skills": ["Python", "SQL", "Git"]
 }
 
-// ─── CURSOR ───────────────────────────────────────────────────────────────────
-const cursor = document.getElementById('cursor');
-const ring   = document.getElementById('cursorRing');
-let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cursor.style.left=mx+'px'; cursor.style.top=my+'px'; });
-(function animRing(){ rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(animRing); })();
+# Доступ
+print(person["name"])            # Александр
+print(person.get("salary", 0))   # 0 (ключа нет, вернуть 0)
 
-// ─── TOAST ────────────────────────────────────────────────────────────────────
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
-}
+# Изменение
+person["age"] = 25
+person["city"] = "Москва"        # добавить новый ключ
 
-// ─── SCREENS ──────────────────────────────────────────────────────────────────
-function showScreen(id) {
-  ['screenLogin','screenOnboarding','screenLoading','screenMain'].forEach(s => {
-    document.getElementById(s).classList.toggle('visible', s === id);
-  });
-}
+# Перебор
+for key, value in person.items():
+    print(f"{key}: {value}")
 
-// ─── ONBOARDING CHIPS ─────────────────────────────────────────────────────────
-function toggleChip(btn, group) {
-  if (group !== 'topics') return;
-  const all = btn.dataset.value === 'all';
-  const chips = document.querySelectorAll('#topicChips .chip');
-  if (all) {
-    chips.forEach(c => c.classList.remove('selected'));
-    btn.classList.add('selected');
-  } else {
-    document.querySelector('#topicChips .chip[data-value="all"]').classList.remove('selected');
-    btn.classList.toggle('selected');
-    if (!document.querySelector('#topicChips .chip.selected')) btn.classList.add('selected');
+# Проверка ключа
+if "name" in person:
+    print("Ключ 'name' существует")
+
+# Словарное включение
+squares = {x: x**2 for x in range(6)}
+# {0: 0, 1: 1, 2: 4, 3: 9, 4: 16, 5: 25}` }]
+      },
+      {
+        id: 's7-3', title: 'Кортежи и множества',
+        html: `<p><strong>Кортеж (tuple)</strong> — неизменяемый список. Быстрее, занимает меньше памяти. Используют для фиксированных данных.</p>
+<p><strong>Множество (set)</strong> — неупорядоченная коллекция уникальных элементов. Поддерживает математические операции над множествами.</p>`,
+        examples: [{ label: 'Кортеж и множество', code: `# Кортеж — создаётся один раз, не изменяется
+point = (10, 20)
+rgb = (255, 128, 0)
+x, y = point  # распаковка
+
+# Функция может вернуть несколько значений через кортеж
+def min_max(lst):
+    return min(lst), max(lst)
+
+low, high = min_max([3, 1, 4, 1, 5, 9])
+print(low, high)  # 1 9
+
+# Множество — только уникальные элементы
+tags = {"python", "backend", "python", "api"}
+print(tags)  # {'api', 'backend', 'python'} — дублей нет
+
+a = {1, 2, 3, 4}
+b = {3, 4, 5, 6}
+
+print(a | b)  # объединение: {1,2,3,4,5,6}
+print(a & b)  # пересечение: {3,4}
+print(a - b)  # разность: {1,2}
+print(a ^ b)  # симм. разность: {1,2,5,6}` }]
+      }
+    ]
+  },
+  {
+    id: 'ch8', num: '08', title: 'Функции',
+    sections: [
+      {
+        id: 's8-1', title: 'Определение функций',
+        html: `<p>Функция — именованный блок кода, который можно вызывать многократно. Функции помогают избежать повторения, улучшают читаемость и упрощают тестирование.</p>
+<h2>Принцип DRY</h2>
+<p><strong>Don't Repeat Yourself</strong> — не повторяй себя. Если один и тот же код встречается дважды, вынесите его в функцию.</p>`,
+        examples: [
+          { label: 'Базовые функции', code: `def greet(name):
+    """Приветствует пользователя по имени."""
+    return f"Привет, {name}!"
+
+message = greet("Александр")
+print(message)  # Привет, Александр!
+
+# Функция без return возвращает None
+def print_separator(char="-", length=40):
+    print(char * length)
+
+print_separator()        # ----------------------------------------
+print_separator("=")     # ========================================
+print_separator("*", 10) # **********` },
+          { label: 'Параметры функций', code: `# Позиционные и именованные аргументы
+def describe_person(name, age, city="Москва"):
+    print(f"{name}, {age} лет, г. {city}")
+
+describe_person("Александр", 24)
+describe_person("Иван", 30, "Санкт-Петербург")
+describe_person(age=25, name="Мария")  # порядок не важен
+
+# *args — произвольное число позиционных аргументов
+def total(*numbers):
+    return sum(numbers)
+
+print(total(1, 2, 3, 4, 5))  # 15
+
+# **kwargs — произвольные именованные аргументы
+def user_info(**data):
+    for key, value in data.items():
+        print(f"  {key}: {value}")
+
+user_info(name="Александр", role="junior", language="Python")` },
+          { label: 'Лямбда-функции', code: `# Лямбда — анонимная функция в одну строку
+square = lambda x: x ** 2
+print(square(5))  # 25
+
+# Чаще используются с sorted, filter, map
+names = ["Иван", "Александр", "Анна", "Борис"]
+sorted_names = sorted(names, key=lambda n: len(n))
+print(sorted_names)  # ['Анна', 'Иван', 'Борис', 'Александр']
+
+numbers = [1, -3, 5, -2, 4, -1]
+positives = list(filter(lambda x: x > 0, numbers))
+print(positives)  # [1, 5, 4]
+
+doubled = list(map(lambda x: x * 2, [1, 2, 3, 4]))
+print(doubled)  # [2, 4, 6, 8]` }
+        ]
+      },
+      {
+        id: 's8-2', title: 'Область видимости и рекурсия',
+        html: `<p>Область видимости (scope) определяет, где переменная доступна. Python использует правило <strong>LEGB</strong>: Local → Enclosing → Global → Built-in.</p>
+<h2>Рекурсия</h2>
+<p>Рекурсивная функция вызывает сама себя. Каждая рекурсия должна иметь <strong>базовый случай</strong> — условие выхода.</p>`,
+        examples: [
+          { label: 'Область видимости', code: `x = "глобальная"
+
+def outer():
+    x = "внешняя"
+    def inner():
+        x = "локальная"
+        print(x)  # локальная
+    inner()
+    print(x)  # внешняя
+
+outer()
+print(x)  # глобальная
+
+# global позволяет изменить глобальную переменную
+counter = 0
+def increment():
+    global counter
+    counter += 1
+
+increment()
+increment()
+print(counter)  # 2` },
+          { label: 'Рекурсия', code: `# Факториал n! = n * (n-1) * ... * 1
+def factorial(n):
+    if n <= 1:      # базовый случай
+        return 1
+    return n * factorial(n - 1)  # рекурсивный вызов
+
+print(factorial(5))   # 120
+print(factorial(10))  # 3628800
+
+# Числа Фибоначчи
+def fib(n):
+    if n <= 1:
+        return n
+    return fib(n - 1) + fib(n - 2)
+
+for i in range(10):
+    print(fib(i), end=" ")  # 0 1 1 2 3 5 8 13 21 34` }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'ch9', num: '09', title: 'ООП — Классы и объекты',
+    sections: [
+      {
+        id: 's9-1', title: 'Классы и объекты',
+        html: `<p>Объектно-ориентированное программирование (ООП) — парадигма, в которой программа строится из объектов, объединяющих данные (атрибуты) и поведение (методы).</p>
+<h2>Ключевые понятия</h2>
+<ul>
+  <li><strong>Класс</strong> — шаблон/чертёж для создания объектов</li>
+  <li><strong>Объект (экземпляр)</strong> — конкретная реализация класса</li>
+  <li><strong>Атрибут</strong> — переменная, принадлежащая объекту</li>
+  <li><strong>Метод</strong> — функция, принадлежащая классу</li>
+  <li><strong>__init__</strong> — конструктор, вызывается при создании объекта</li>
+  <li><strong>self</strong> — ссылка на текущий объект</li>
+</ul>`,
+        examples: [
+          { label: 'Создание класса', code: `class Developer:
+    # Атрибут класса (общий для всех)
+    company = "TechCorp"
+
+    def __init__(self, name, language, level="junior"):
+        # Атрибуты экземпляра
+        self.name = name
+        self.language = language
+        self.level = level
+        self.projects = []
+
+    def introduce(self):
+        return f"Привет! Я {self.name}, {self.level} разработчик на {self.language}."
+
+    def add_project(self, project):
+        self.projects.append(project)
+        print(f"Проект '{project}' добавлен")
+
+    def __str__(self):
+        return f"Developer({self.name}, {self.language})"
+
+# Создание объектов
+alex = Developer("Александр", "Python")
+ivan = Developer("Иван", "JavaScript", "middle")
+
+print(alex.introduce())
+alex.add_project("PyLearn — курс Python")
+print(alex.projects)
+print(alex)` },
+          { label: 'Наследование', code: `class Animal:
+    def __init__(self, name):
+        self.name = name
+
+    def speak(self):
+        return "..."
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}('{self.name}')"
+
+class Dog(Animal):
+    def speak(self):
+        return "Гав!"
+
+    def fetch(self):
+        return f"{self.name} принёс мяч"
+
+class Cat(Animal):
+    def speak(self):
+        return "Мяу!"
+
+# Полиморфизм
+animals = [Dog("Рекс"), Cat("Мурка"), Dog("Бобик")]
+for animal in animals:
+    print(f"{animal.name}: {animal.speak()}")
+
+# super() — вызов родительского метода
+class GoldenRetriever(Dog):
+    def __init__(self, name, color="золотистый"):
+        super().__init__(name)
+        self.color = color
+
+buddy = GoldenRetriever("Бади")
+print(buddy.speak())  # Гав!` }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'ch10', num: '10', title: 'Работа с файлами',
+    sections: [
+      {
+        id: 's10-1', title: 'Чтение и запись файлов',
+        html: `<p>Python позволяет легко работать с файлами. Для открытия используется встроенная функция <code>open()</code>.</p>
+<h2>Режимы открытия</h2>
+<table>
+  <tr><th>Режим</th><th>Описание</th></tr>
+  <tr><td><code>'r'</code></td><td>Чтение (по умолчанию)</td></tr>
+  <tr><td><code>'w'</code></td><td>Запись (перезаписывает файл)</td></tr>
+  <tr><td><code>'a'</code></td><td>Дополнение (append)</td></tr>
+  <tr><td><code>'rb'</code></td><td>Чтение в бинарном режиме</td></tr>
+  <tr><td><code>'wb'</code></td><td>Запись в бинарном режиме</td></tr>
+</table>
+<div class="note"><div class="note-lbl">Лучшая практика</div><p>Всегда используйте менеджер контекста <code>with open(...) as f:</code>. Он гарантирует закрытие файла даже при возникновении ошибки.</p></div>`,
+        examples: [{ label: 'Файловые операции', code: `# Запись в файл
+with open("notes.txt", "w", encoding="utf-8") as f:
+    f.write("Первая строка\n")
+    f.write("Вторая строка\n")
+    f.writelines(["Третья\n", "Четвёртая\n"])
+
+# Чтение файла целиком
+with open("notes.txt", "r", encoding="utf-8") as f:
+    content = f.read()
+    print(content)
+
+# Чтение построчно
+with open("notes.txt", "r", encoding="utf-8") as f:
+    for line in f:
+        print(line.strip())  # strip() убирает \n
+
+# Дополнение файла (не перезаписывает)
+with open("notes.txt", "a", encoding="utf-8") as f:
+    f.write("Пятая строка (дополнена)\n")` }]
+      }
+    ]
+  },
+  {
+    id: 'ch11', num: '11', title: 'Исключения',
+    sections: [
+      {
+        id: 's11-1', title: 'try / except',
+        html: `<p>Исключения — это ошибки, возникающие во время выполнения программы. Python позволяет их перехватывать и обрабатывать, не прерывая работу программы.</p>
+<h2>Распространённые исключения</h2>
+<table>
+  <tr><th>Исключение</th><th>Причина</th></tr>
+  <tr><td><code>ValueError</code></td><td>Неверное значение (<code>int("abc")</code>)</td></tr>
+  <tr><td><code>TypeError</code></td><td>Неверный тип данных</td></tr>
+  <tr><td><code>ZeroDivisionError</code></td><td>Деление на ноль</td></tr>
+  <tr><td><code>IndexError</code></td><td>Индекс за пределами списка</td></tr>
+  <tr><td><code>KeyError</code></td><td>Ключ не найден в словаре</td></tr>
+  <tr><td><code>FileNotFoundError</code></td><td>Файл не существует</td></tr>
+</table>`,
+        examples: [
+          { label: 'try / except / finally', code: `# Базовый try-except
+try:
+    number = int(input("Введите число: "))
+    result = 100 / number
+    print(f"100 / {number} = {result}")
+except ValueError:
+    print("Ошибка: введите целое число")
+except ZeroDivisionError:
+    print("Ошибка: деление на ноль невозможно")
+except Exception as e:
+    print(f"Неожиданная ошибка: {e}")
+else:
+    print("Всё прошло успешно!")  # если ошибок не было
+finally:
+    print("Этот блок выполняется всегда")` },
+          { label: 'Генерация исключений', code: `def set_age(age):
+    if not isinstance(age, int):
+        raise TypeError("Возраст должен быть целым числом")
+    if age < 0 or age > 150:
+        raise ValueError(f"Некорректный возраст: {age}")
+    return age
+
+try:
+    set_age(-5)
+except ValueError as e:
+    print(f"Ошибка: {e}")
+
+# Пользовательское исключение
+class InsufficientFundsError(Exception):
+    def __init__(self, amount, balance):
+        super().__init__(f"Недостаточно средств: нужно {amount}, есть {balance}")
+        self.amount = amount
+        self.balance = balance
+
+def withdraw(amount, balance):
+    if amount > balance:
+        raise InsufficientFundsError(amount, balance)
+    return balance - amount` }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'ch12', num: '12', title: 'Модули и библиотеки',
+    sections: [
+      {
+        id: 's12-1', title: 'Импорт модулей',
+        html: `<p>Модуль — файл с кодом Python. Пакет — папка с модулями. Python имеет огромную стандартную библиотеку и экосистему из сотен тысяч сторонних пакетов.</p>
+<h2>Способы импорта</h2>
+<ul>
+  <li><code>import math</code> — импорт модуля целиком</li>
+  <li><code>from math import sqrt, pi</code> — импорт конкретного</li>
+  <li><code>import numpy as np</code> — с псевдонимом</li>
+  <li><code>from math import *</code> — всё (не рекомендуется)</li>
+</ul>`,
+        examples: [
+          { label: 'Стандартная библиотека', code: `import math
+import random
+import datetime
+import os
+
+# math
+print(math.pi)          # 3.141592...
+print(math.sqrt(144))   # 12.0
+print(math.ceil(3.2))   # 4
+print(math.floor(3.9))  # 3
+
+# random
+print(random.randint(1, 10))      # случайное 1..10
+print(random.choice(["a","b","c"]))
+items = [1, 2, 3, 4, 5]
+random.shuffle(items)
+print(items)
+
+# datetime
+now = datetime.datetime.now()
+print(now.strftime("%d.%m.%Y %H:%M"))
+
+# os — работа с файловой системой
+print(os.getcwd())         # текущая директория
+print(os.listdir("."))     # список файлов` },
+          { label: 'pip — установка пакетов', code: `# В терминале:
+# pip install requests    — установить пакет
+# pip uninstall requests  — удалить
+# pip list                — список установленных
+# pip freeze > requirements.txt  — зафиксировать зависимости
+# pip install -r requirements.txt  — установить из файла
+
+# Пример использования requests
+import requests  # pip install requests
+
+response = requests.get("https://api.github.com")
+print(response.status_code)  # 200
+data = response.json()
+print(data.keys())` }
+        ]
+      }
+    ]
   }
-}
-
-function selectOne(btn, groupId) {
-  document.querySelectorAll('#' + groupId + ' .chip').forEach(c => c.classList.remove('selected'));
-  btn.classList.add('selected');
-}
-
-// ─── LOGIN → ONBOARDING ───────────────────────────────────────────────────────
-function goToOnboarding() {
-  const name = document.getElementById('nameInput').value.trim() || 'Гость';
-  userData.name = name;
-  showScreen('screenOnboarding');
-}
-
-function finishOnboarding() {
-  const topics = [...document.querySelectorAll('#topicChips .chip.selected')].map(c => c.dataset.value);
-  const level  = document.querySelector('#levelChips .chip.selected')?.dataset.value || 'intermediate';
-  const wpd    = parseInt(document.querySelector('#countChips .chip.selected')?.dataset.value || '3');
-  userData.prefs = { topics, level, wordsPerDay: wpd };
-  save();
-  showScreen('screenLoading');
-  loadAndRender();
-}
-
-// ─── WORD SELECTION ───────────────────────────────────────────────────────────
-const LEVEL_MAP = {
-  beginner:     ['A1','A2','B1'],
-  intermediate: ['B1','B2'],
-  advanced:     ['C1','C2']
-};
-
-function buildQueue(words) {
-  const levels  = LEVEL_MAP[userData.prefs.level] || ['B1','B2'];
-  const topics  = userData.prefs.topics;
-  const all     = topics.includes('all');
-
-  return words.filter(w => {
-    const lvl = w.tags[0];
-    if (!levels.includes(lvl)) return false;
-    if (all) return true;
-    return topics.includes(w.topic);
-  }).sort((a, b) => {
-    const order = { undefined: 0, learning: 1, known: 2 };
-    return (order[userData.words[a.word]?.status] || 0) - (order[userData.words[b.word]?.status] || 0);
-  });
-}
-
-function getTodayWords(words) {
-  const today = todayStr();
-  const stored = userData.todayQueue;
-  if (stored && stored.date === today && stored.words.length === userData.prefs.wordsPerDay) {
-    const result = words.filter(w => stored.words.includes(w.word));
-    if (result.length === stored.words.length) return result;
-  }
-  const queue = buildQueue(words);
-  const picked = queue.slice(0, userData.prefs.wordsPerDay).map(w => w.word);
-  userData.todayQueue = { date: today, words: picked };
-  save();
-  return queue.slice(0, userData.prefs.wordsPerDay);
-}
-
-// ─── UTILS ────────────────────────────────────────────────────────────────────
-function todayStr() { return new Date().toISOString().slice(0,10); }
-
-function dateLabel() {
-  const d = new Date();
-  const m = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
-  return `${d.getDate()} ${m[d.getMonth()]} ${d.getFullYear()}`;
-}
-
-// ─── RENDER WORD CARDS ────────────────────────────────────────────────────────
-function renderWordCards(words) {
-  const container = document.getElementById('wordCards');
-  container.innerHTML = '';
-  words.forEach((w, i) => {
-    const st = userData.words[w.word]?.status;
-    const card = document.createElement('div');
-    card.className = 'word-card';
-    card.id = 'card-' + w.word;
-    card.innerHTML = `
-      <div class="wc-left">
-        <div class="wc-date">// слово ${i+1} · ${dateLabel()}</div>
-        <div class="wc-word">${w.word}</div>
-        <div class="wc-phonetic">${w.phonetic || ''}</div>
-        <div class="wc-pos">${w.pos || ''}</div>
-        <div class="wc-tags">${(w.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('')}</div>
-      </div>
-      <div class="wc-right">
-        <div class="wc-ru">${w.def_ru || w.def}</div>
-        <div class="wc-en">${w.def}</div>
-        <div class="wc-example">"${w.example}"</div>
-        <div class="wc-actions">
-          <button class="wc-btn primary ${st==='known'?'done-known':''}" onclick="markWord('${w.word}','known')">✓ Знаю</button>
-          <button class="wc-btn ${st==='learning'?'done-learning':''}" onclick="markWord('${w.word}','learning')">◈ Учу</button>
-          ${st==='learning' ? `<button class="wc-btn" style="border-color:rgba(240,237,232,0.3);color:var(--white);" onclick="startExercise('${w.word}')">◎ Закрепить</button>` : ''}
-        </div>
-      </div>`;
-    container.appendChild(card);
-  });
-}
-
-function markWord(word, status) {
-  const w = allWords.find(x => x.word === word);
-  if (!w) return;
-  userData.words[word] = { word, pos: w.pos, def_ru: w.def_ru, def: w.def, topic: w.topic, status, addedAt: todayStr() };
-  const td = todayStr();
-  if (!userData.streak) userData.streak = [];
-  if (!userData.streak.includes(td)) userData.streak.push(td);
-  save();
-  renderWordCards(todayWords);
-  renderStats();
-  renderCalendar();
-  renderWordTable(currentFilter);
-  renderProgress(allWords);
-  showToast(status === 'known' ? '✓ Отмечено как знакомое' : '◈ Добавлено в изучение');
-}
-
-// ─── RENDER STATS ─────────────────────────────────────────────────────────────
-function renderStats() {
-  const list  = Object.values(userData.words);
-  const known = list.filter(w => w.status === 'known').length;
-  animCount('statWords', known);
-  animCount('statStreak', userData.streak?.length || 0);
-  animCount('statAccuracy', list.length ? Math.round((known/list.length)*100) : 0);
-  animCount('statTotal', list.length);
-  document.getElementById('streakBadge').textContent = `◈ ${userData.streak?.length||0} дней подряд`;
-}
-
-function animCount(id, target) {
-  const el = document.getElementById(id); let cur = 0;
-  const step = target / 40;
-  const t = setInterval(() => { cur = Math.min(cur+step, target); el.textContent = Math.floor(cur); if(cur>=target)clearInterval(t); }, 16);
-}
-
-// ─── RENDER CALENDAR ──────────────────────────────────────────────────────────
-function renderCalendar() {
-  const grid = document.getElementById('calGrid');
-  const today = new Date();
-  const year = today.getFullYear(), month = today.getMonth();
-  const mru = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
-  document.getElementById('streakTitle').textContent = `// активность · ${mru[month]} ${year}`;
-  let offset = new Date(year, month, 1).getDay() - 1;
-  if (offset < 0) offset = 6;
-  const days = new Date(year, month+1, 0).getDate();
-  const streakSet = new Set(userData.streak || []);
-  grid.innerHTML = '';
-  for (let i=0;i<offset;i++) { const d=document.createElement('div'); d.className='cal-day'; grid.appendChild(d); }
-  for (let day=1;day<=days;day++) {
-    const d = document.createElement('div');
-    const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-    d.className = 'cal-day';
-    if (day===today.getDate()) d.classList.add('today');
-    else if (day<today.getDate()) d.classList.add(streakSet.has(ds)?'done':'missed');
-    grid.appendChild(d);
-  }
-}
-
-// ─── RENDER PROGRESS ──────────────────────────────────────────────────────────
-function renderProgress(words) {
-  const counts={}, known={};
-  words.forEach(w => {
-    counts[w.topic]=(counts[w.topic]||0)+1;
-    if(userData.words[w.word]?.status==='known') known[w.topic]=(known[w.topic]||0)+1;
-  });
-  document.getElementById('progressList').innerHTML = Object.keys(counts).map(t => {
-    const pct=Math.round(((known[t]||0)/counts[t])*100);
-    return `<div class="progress-item">
-      <span class="progress-name">${t}</span>
-      <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:0%" data-w="${pct}%"></div></div>
-      <span class="progress-pct">${pct}%</span></div>`;
-  }).join('');
-  setTimeout(()=>{ document.querySelectorAll('.progress-bar-fill').forEach(b=>b.style.width=b.dataset.w); },300);
-}
-
-// ─── RENDER WORD TABLE ────────────────────────────────────────────────────────
-function renderWordTable(filter) {
-  currentFilter = filter;
-  const list = Object.values(userData.words);
-  const filtered = filter==='all' ? list : list.filter(w=>w.status===filter);
-  document.getElementById('wordTableBody').innerHTML = filtered.sort((a,b)=>new Date(b.addedAt)-new Date(a.addedAt)).map(w=>`
-    <tr>
-      <td class="w-word">${w.word}</td>
-      <td class="w-pos">${w.pos||''}</td>
-      <td class="w-def">${w.def_ru||w.def||''}</td>
-      <td><span class="w-status ${w.status}"></span></td>
-    </tr>`).join('') || `<tr><td colspan="4" style="color:var(--grey-mid);font-family:'Courier Prime',monospace;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;padding:2rem 1rem;">Слов пока нет</td></tr>`;
-}
-
-function filterWords(f, btn) {
-  document.querySelectorAll('.ctrl-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  renderWordTable(f);
-}
-
-// ─── LOAD WORDS ───────────────────────────────────────────────────────────────
-async function loadWords() {
-  try {
-    const res = await fetch(WORDS_URL);
-    if (res.ok) return res.json();
-  } catch(e) {}
-  return FALLBACK_WORDS;
-}
-
-const FALLBACK_WORDS = [
-  { word:'ephemeral',phonetic:'/ɪˈfem.ər.əl/',pos:'adjective',def:'Lasting for a very short time.',def_ru:'Мимолётный, недолговечный.',example:'The ephemeral beauty of cherry blossoms.',topic:'Философия',tags:['C1','Философия'] },
-  { word:'resilient',phonetic:'/rɪˈzɪl.i.ənt/',pos:'adjective',def:'Able to recover quickly from difficult conditions.',def_ru:'Устойчивый, жизнестойкий.',example:'Children are remarkably resilient.',topic:'Психология',tags:['B2','Психология'] },
-  { word:'empathy',phonetic:'/ˈem.pə.θi/',pos:'noun',def:'The ability to understand the feelings of another.',def_ru:'Эмпатия — способность понимать чувства других.',example:'Good leaders show empathy.',topic:'Психология',tags:['B1','Психология'] },
-  { word:'grateful',phonetic:'/ˈɡreɪt.fəl/',pos:'adjective',def:'Feeling an appreciation of kindness.',def_ru:'Благодарный.',example:'I am so grateful for your help.',topic:'Повседневная речь',tags:['A2','Повседневная речь'] },
-  { word:'pragmatic',phonetic:'/præɡˈmæt.ɪk/',pos:'adjective',def:'Dealing with things sensibly and realistically.',def_ru:'Прагматичный, практичный.',example:'We need a pragmatic approach.',topic:'Бизнес',tags:['B1','Бизнес'] },
 ];
 
-// ─── MAIN RENDER ──────────────────────────────────────────────────────────────
-async function loadAndRender() {
-  allWords = await loadWords();
-  todayWords = getTodayWords(allWords);
-
-  const greeting = userData.name && userData.name !== 'Гость' ? `Привет, ${userData.name}!` : 'Привет!';
-  document.getElementById('heroSub').textContent = `${greeting} Сегодня для тебя ${todayWords.length} ${wordForm(todayWords.length)}.`;
-
-  renderWordCards(todayWords);
-  renderStats();
-  renderCalendar();
-  renderProgress(allWords);
-  renderWordTable('all');
-
-  document.getElementById('navUser').style.display = 'flex';
-  document.getElementById('navUsername').textContent = userData.name;
-
-  showScreen('screenMain');
+// Flat list of all sections for prev/next navigation
+function flatSections() {
+  const result = [];
+  COURSE.forEach(ch => ch.sections.forEach(sec => result.push({ ch, sec })));
+  return result;
 }
 
-function wordForm(n) {
-  if (n === 1) return 'новое слово';
-  if (n >= 2 && n <= 4) return 'новых слова';
-  return 'новых слов';
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let currentTab = 'python';
+let currentSectionId = null;
+let openChapters = new Set(['ch1']);
+
+// ─── SIDEBAR ─────────────────────────────────────────────────────────────────
+function buildSidebar() {
+  const list = document.getElementById('chapterList');
+  list.innerHTML = '';
+  COURSE.forEach(ch => {
+    const item = document.createElement('div');
+    item.className = 'chapter-item' + (openChapters.has(ch.id) ? ' open' : '');
+    item.id = 'chitem-' + ch.id;
+
+    const hd = document.createElement('div');
+    hd.className = 'chapter-hd';
+    hd.innerHTML = `<span class="ch-num">${ch.num}</span><span>${ch.title}</span><span class="ch-arr">▶</span>`;
+    hd.onclick = () => toggleChapter(ch.id);
+
+    const secList = document.createElement('div');
+    secList.className = 'sec-list';
+    ch.sections.forEach(sec => {
+      const link = document.createElement('div');
+      link.className = 'sec-link' + (sec.id === currentSectionId ? ' active' : '');
+      link.id = 'slink-' + sec.id;
+      link.textContent = sec.title;
+      link.onclick = () => navigate(ch.id, sec.id);
+      secList.appendChild(link);
+    });
+
+    item.appendChild(hd);
+    item.appendChild(secList);
+    list.appendChild(item);
+  });
 }
 
-// ─── RESET ────────────────────────────────────────────────────────────────────
-function resetAll() {
-  if (!confirm('Сбросить весь прогресс?')) return;
-  localStorage.removeItem(STORAGE_KEY);
-  userData = { name:'', prefs:{ topics:['all'], level:'intermediate', wordsPerDay:3 }, words:{}, streak:[] };
-  document.getElementById('navUser').style.display = 'none';
-  document.getElementById('nameInput').value = '';
+function toggleChapter(chId) {
+  if (openChapters.has(chId)) {
+    openChapters.delete(chId);
+  } else {
+    openChapters.add(chId);
+  }
+  buildSidebar();
+}
 
-  // reset topic chips
-  document.querySelectorAll('#topicChips .chip').forEach(c => c.classList.remove('selected'));
-  document.querySelector('#topicChips .chip[data-value="all"]').classList.add('selected');
-  // reset level chips
-  document.querySelectorAll('#levelChips .chip').forEach(c => c.classList.remove('selected'));
-  document.querySelector('#levelChips .chip[data-value="intermediate"]').classList.add('selected');
-  // reset count chips
-  document.querySelectorAll('#countChips .chip').forEach(c => c.classList.remove('selected'));
-  document.querySelector('#countChips .chip[data-value="3"]').classList.add('selected');
+// ─── TAB SWITCH ───────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  currentTab = tab;
+  document.getElementById('tabPython').classList.toggle('active', tab === 'python');
+  document.getElementById('tabEnglish').classList.toggle('active', tab === 'english');
 
-  showScreen('screenLogin');
+  if (tab === 'english') {
+    document.getElementById('chapterList').style.display = 'none';
+    renderEnglish();
+  } else {
+    document.getElementById('chapterList').style.display = '';
+    if (currentSectionId) {
+      const flat = flatSections();
+      const found = flat.find(x => x.sec.id === currentSectionId);
+      if (found) renderSection(found.ch, found.sec);
+      else renderHome();
+    } else {
+      renderHome();
+    }
+  }
+}
+
+// ─── NAVIGATION ───────────────────────────────────────────────────────────────
+function navigate(chId, secId) {
+  currentSectionId = secId;
+  openChapters.add(chId);
+  buildSidebar();
+  const ch = COURSE.find(c => c.id === chId);
+  const sec = ch.sections.find(s => s.id === secId);
+  renderSection(ch, sec);
+  document.querySelector('.main').scrollTo(0, 0);
+}
+
+function goHome() {
+  currentSectionId = null;
+  buildSidebar();
+  renderHome();
+}
+
+// ─── RENDER HOME ──────────────────────────────────────────────────────────────
+function renderHome() {
+  document.getElementById('topBar').innerHTML = '<a onclick="goHome()">PyLearn</a>';
+  document.getElementById('contentArea').innerHTML = `
+    <div>
+      <div class="home-badge">v1.0 · Python 3.x</div>
+      <h1 class="home-title">Изучаем <span>Python</span><br>с нуля до уверенного уровня</h1>
+      <p class="home-desc">Структурированный курс с теорией, примерами кода и практическими задачами. Все темы — от основ до объектно-ориентированного программирования.</p>
+
+      <div class="about-card">
+        <div class="about-av">А</div>
+        <div class="about-text">
+          <h3>Привет! Меня зовут Александр</h3>
+          <p>Я младший инженер-программист и создал эту страницу, чтобы систематизировать знания по Python и иметь удобный справочник под рукой. Здесь собран лучший материал из официальной документации, книги «Python Crash Course» и курсов CS50P. Все примеры проверены и прокомментированы — учись вместе со мной!</p>
+        </div>
+      </div>
+
+      <p class="grid-title">Содержание курса</p>
+      <div class="course-grid">
+        ${COURSE.map(ch => `
+          <div class="course-card" onclick="navigate('${ch.id}','${ch.sections[0].id}')">
+            <div class="cc-num">Глава ${ch.num}</div>
+            <div class="cc-title">${ch.title}</div>
+            <div class="cc-count">${ch.sections.length} ${ch.sections.length === 1 ? 'раздел' : ch.sections.length < 5 ? 'раздела' : 'разделов'}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// ─── RENDER SECTION ───────────────────────────────────────────────────────────
+function renderSection(ch, sec) {
+  const flat = flatSections();
+  const idx = flat.findIndex(x => x.sec.id === sec.id);
+  const prev = flat[idx - 1];
+  const next = flat[idx + 1];
+
+  document.getElementById('topBar').innerHTML =
+    `<a onclick="goHome()">PyLearn</a> &nbsp;/&nbsp; Глава ${ch.num} &nbsp;/&nbsp; ${sec.title}`;
+
+  const examples = (sec.examples || []).map(ex => codeBlock(ex.label, ex.code)).join('');
+
+  const prevBtn = prev
+    ? `<button class="nav-btn" onclick="navigate('${prev.ch.id}','${prev.sec.id}')">
+        <span class="nav-btn-lbl">← Назад</span>
+        <span class="nav-btn-title">${prev.sec.title}</span>
+       </button>`
+    : `<div></div>`;
+
+  const nextBtn = next
+    ? `<button class="nav-btn next" onclick="navigate('${next.ch.id}','${next.sec.id}')">
+        <span class="nav-btn-lbl">Далее →</span>
+        <span class="nav-btn-title">${next.sec.title}</span>
+       </button>`
+    : `<div></div>`;
+
+  document.getElementById('contentArea').innerHTML = `
+    <div>
+      <div class="sec-chapter-label">Глава ${ch.num} — ${ch.title}</div>
+      <h1 class="sec-title">${sec.title}</h1>
+      <div class="cb">${sec.html}</div>
+      ${examples}
+      <div class="sec-nav">${prevBtn}${nextBtn}</div>
+    </div>
+  `;
+
+  document.querySelectorAll('.code-block pre code').forEach(el => hljs.highlightElement(el));
+}
+
+// ─── RENDER ENGLISH ───────────────────────────────────────────────────────────
+function renderEnglish() {
+  document.getElementById('topBar').innerHTML = '<a onclick="goHome()">PyLearn</a> &nbsp;/&nbsp; English';
+  document.getElementById('contentArea').innerHTML = `
+    <div class="english-ph">
+      <div class="english-ph-icon">🇬🇧</div>
+      <h1>English Course</h1>
+      <p>Раздел с курсом английского языка находится в разработке. Здесь появятся материалы по грамматике, словарному запасу и разговорному английскому для IT-специалистов.</p>
+      <span class="badge">Скоро — Coming Soon</span>
+    </div>
+  `;
+}
+
+// ─── CODE BLOCK ───────────────────────────────────────────────────────────────
+function codeBlock(label, code) {
+  const id = 'cb-' + Math.random().toString(36).slice(2, 8);
+  const escaped = code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return `
+    <div class="code-block">
+      <div class="code-hd">
+        <span class="code-lang">${label}</span>
+        <button class="code-copy" id="${id}" onclick="copyCode(this)">Копировать</button>
+      </div>
+      <pre><code class="language-python">${escaped}</code></pre>
+    </div>`;
+}
+
+function copyCode(btn) {
+  const code = btn.closest('.code-block').querySelector('code').innerText;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = 'Скопировано!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Копировать'; btn.classList.remove('copied'); }, 2000);
+  });
 }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
-async function init() {
-  const saved = load();
-  if (!saved || !saved.name) { showScreen('screenLogin'); return; }
-  userData = { prefs:{ topics:['all'], level:'intermediate', wordsPerDay:3 }, words:{}, streak:[], ...saved };
-  showScreen('screenLoading');
-  await loadAndRender();
-}
-
-init();
-
-// ─── EXERCISES ────────────────────────────────────────────────────────────────
-let currentEx = null;
-
-function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
-
-function startExercise(wordStr) {
-  const word = allWords.find(w => w.word === wordStr);
-  if (!word) return;
-
-  const others = shuffle(allWords.filter(w => w.word !== wordStr)).slice(0, 3);
-
-  const exercises = [
-    {
-      type: '// что означает это слово?',
-      question: word.word,
-      subtext: null,
-      options: shuffle([
-        { text: word.def_ru || word.def, correct: true },
-        ...others.map(w => ({ text: w.def_ru || w.def, correct: false }))
-      ])
-    },
-    {
-      type: '// вставь слово в предложение',
-      question: 'Какое слово пропущено?',
-      subtext: word.example.replace(new RegExp('\\b' + word.word + '\\b', 'gi'), '______'),
-      options: shuffle([
-        { text: word.word, correct: true },
-        ...others.map(w => ({ text: w.word, correct: false }))
-      ])
-    },
-    {
-      type: '// найди слово по определению',
-      question: 'Какое слово соответствует описанию?',
-      subtext: word.def,
-      options: shuffle([
-        { text: word.word, correct: true },
-        ...others.map(w => ({ text: w.word, correct: false }))
-      ])
-    }
-  ];
-
-  currentEx = { word, exercises, current: 0, score: 0 };
-  document.getElementById('exContent').style.display = 'block';
-  document.getElementById('exResult').style.display = 'none';
-  renderExercise();
-  document.getElementById('exerciseModal').classList.add('visible');
-}
-
-function renderExercise() {
-  const { exercises, current } = currentEx;
-  const ex = exercises[current];
-
-  document.getElementById('exProgressLabel').textContent = `Упражнение ${current + 1} из 3`;
-  document.getElementById('exDots').innerHTML = exercises.map((_, i) =>
-    `<span class="ex-dot ${i < current ? 'done' : i === current ? 'active' : ''}"></span>`
-  ).join('');
-
-  document.getElementById('exType').textContent = ex.type;
-  document.getElementById('exQuestion').textContent = ex.question;
-
-  const sub = document.getElementById('exSubtext');
-  if (ex.subtext) { sub.textContent = ex.subtext; sub.style.display = 'block'; }
-  else { sub.style.display = 'none'; }
-
-  document.getElementById('exOptions').innerHTML = ex.options.map((opt, i) =>
-    `<button class="ex-option" onclick="checkAnswer(${i})">${opt.text}</button>`
-  ).join('');
-
-  document.getElementById('exFeedback').style.display = 'none';
-  document.getElementById('exNext').style.display = 'none';
-}
-
-function checkAnswer(index) {
-  const { exercises, current } = currentEx;
-  const ex = exercises[current];
-  const chosen = ex.options[index];
-
-  if (chosen.correct) currentEx.score++;
-
-  document.querySelectorAll('.ex-option').forEach((btn, i) => {
-    btn.disabled = true;
-    if (ex.options[i].correct) btn.classList.add('correct');
-    else if (i === index && !chosen.correct) btn.classList.add('wrong');
-  });
-
-  const fb = document.getElementById('exFeedback');
-  fb.textContent = chosen.correct ? '✓ Верно!' : '✗ Неверно — правильный ответ выделен выше';
-  fb.className = 'ex-feedback ' + (chosen.correct ? 'success' : 'error');
-  fb.style.display = 'block';
-
-  if (current < 2) {
-    document.getElementById('exNext').style.display = 'block';
-  } else {
-    setTimeout(showResult, 1000);
-  }
-}
-
-function nextExercise() {
-  currentEx.current++;
-  renderExercise();
-}
-
-function showResult() {
-  const { score, word } = currentEx;
-  document.getElementById('exContent').style.display = 'none';
-  document.getElementById('exResult').style.display = 'block';
-  document.getElementById('exResultScore').textContent = score;
-
-  const msgs = ['Попробуй ещё раз — повтори слово и закрепи снова.', 'Неплохо! Ещё пара попыток — и запомнишь.', 'Хорошо! Почти запомнил.', 'Отлично! Слово освоено.'];
-  document.getElementById('exResultMsg').textContent = msgs[score] || msgs[0];
-
-  const btn = document.getElementById('exMarkKnown');
-  btn.style.display = score >= 2 ? 'inline-block' : 'none';
-}
-
-function markKnownFromExercise() {
-  if (!currentEx) return;
-  markWord(currentEx.word.word, 'known');
-  closeExercise();
-}
-
-function closeExercise() {
-  document.getElementById('exerciseModal').classList.remove('visible');
-  currentEx = null;
-}
+buildSidebar();
+renderHome();
 </script>
 </body>
 </html>
