@@ -1,0 +1,102 @@
+[
+  {
+    "date": "2026-05-10",
+    "word": "ephemeral",
+    "phonetic": "/ɪˈfem.ər.əl/",
+    "pos": "adjective",
+    "def": "Lasting for a very short time; transitory by nature.",
+    "example": "The ephemeral beauty of cherry blossoms makes them all the more precious.",
+    "topic": "Философия",
+    "tags": ["C1", "Поэзия", "Философия"]
+  },
+  {
+    "date": "2026-05-09",
+    "word": "laconic",
+    "phonetic": "/ləˈkɒn.ɪk/",
+    "pos": "adjective",
+    "def": "Using very few words; brief and concise.",
+    "example": "His laconic reply left everyone guessing.",
+    "topic": "Литература",
+    "tags": ["B2", "Риторика"]
+  },
+  {
+    "date": "2026-05-08",
+    "word": "chiaroscuro",
+    "phonetic": "/kiˌɑːrəˈsk(j)ʊərəʊ/",
+    "pos": "noun",
+    "def": "The treatment of light and shadow in drawing and painting.",
+    "example": "Caravaggio mastered chiaroscuro to dramatic effect.",
+    "topic": "Искусство",
+    "tags": ["C2", "Живопись"]
+  },
+  {
+    "date": "2026-05-07",
+    "word": "melancholy",
+    "phonetic": "/ˈmel.ən.kɒl.i/",
+    "pos": "noun",
+    "def": "A feeling of pensive sadness, typically with no obvious cause.",
+    "example": "A deep melancholy settled over him as autumn approached.",
+    "topic": "Философия",
+    "tags": ["B2", "Эмоции"]
+  },
+  {
+    "date": "2026-05-06",
+    "word": "penumbra",
+    "phonetic": "/pɪˈnʌm.brə/",
+    "pos": "noun",
+    "def": "The partially shaded outer region of a shadow cast by an opaque object.",
+    "example": "The moon moved into the penumbra of Earth's shadow.",
+    "topic": "Наука",
+    "tags": ["C1", "Астрономия"]
+  },
+  {
+    "date": "2026-05-05",
+    "word": "liminal",
+    "phonetic": "/ˈlɪm.ɪ.nəl/",
+    "pos": "adjective",
+    "def": "Occupying a position at, or on both sides of, a boundary or threshold.",
+    "example": "The airport is a liminal space — neither here nor there.",
+    "topic": "Философия",
+    "tags": ["C2", "Антропология"]
+  },
+  {
+    "date": "2026-05-04",
+    "word": "petrichor",
+    "phonetic": "/ˈpet.rɪ.kɔːr/",
+    "pos": "noun",
+    "def": "A pleasant smell that frequently accompanies the first rain after a long period of warm, dry weather.",
+    "example": "She stepped outside and inhaled the petrichor rising from the warm earth.",
+    "topic": "Наука",
+    "tags": ["C1", "Природа"]
+  },
+  {
+    "date": "2026-05-03",
+    "word": "sonder",
+    "phonetic": "/ˈsɒn.dər/",
+    "pos": "noun",
+    "def": "The realization that each passerby has a life as vivid and complex as one's own.",
+    "example": "Walking through the city, he was overcome by a sudden sonder.",
+    "topic": "Философия",
+    "tags": ["C2", "Психология"]
+  },
+  {
+    "date": "2026-05-02",
+    "word": "serendipity",
+    "phonetic": "/ˌser.ənˈdɪp.ɪ.ti/",
+    "pos": "noun",
+    "def": "The occurrence of events by chance in a happy or beneficial way.",
+    "example": "Finding that book was pure serendipity.",
+    "topic": "Литература",
+    "tags": ["B2", "Судьба"]
+  },
+  {
+    "date": "2026-05-01",
+    "word": "numinous",
+    "phonetic": "/ˈnjuː.mɪ.nəs/",
+    "pos": "adjective",
+    "def": "Having a strong religious or spiritual quality; indicating or suggesting the presence of a divinity.",
+    "example": "The ancient cathedral had a numinous atmosphere that silenced visitors.",
+    "topic": "Философия",
+    "tags": ["C2", "Религия"]
+  }
+]
